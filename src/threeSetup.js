@@ -250,6 +250,4 @@ function updateShoeColor(value) {
     reloadShoeColor();
 }
 
-
-
 export { setupThreeJS, updateShoeColor };
