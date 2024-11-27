@@ -114,7 +114,7 @@
                 const data = await response.json();
                 if (response.ok) {
                     alert(data.message); // Display success message
-                    window.location.href = '/homepage'; // Redirect to homepage
+                    window.location.href = '/check_strava'; // Redirect to homepage
                 } else {
                     document.getElementById('login-error').textContent = data.error;
                 }

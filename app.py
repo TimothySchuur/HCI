@@ -1,7 +1,9 @@
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, session, redirect, url_for
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
+from stravalib import Client
+import requests
 import os
 
 # Flask app initialization
@@ -30,9 +32,7 @@ class Users(db.Model):
     username = db.Column(db.String(150), unique=True, nullable=False)
     email = db.Column(db.String(150), unique=True, nullable=False)
     password_hash = db.Column(db.String(150), nullable=False)
-
-with app.app_context():
-    db.create_all()
+    strava_connected = db.Column(db.Boolean, default=False)
 
 # Updated Shoes model
 class Shoes(db.Model):
@@ -45,9 +45,13 @@ class Shoes(db.Model):
     main_focus = db.Column(db.String(100), nullable=False)
     eco_friendly = db.Column(db.Boolean, nullable=False)
     foot_type = db.Column(db.String(100), nullable=False)
+    cushioning_rate = db.Column(db.Integer, nullable=False)  # New column for cushioning rate
+    durability_rate = db.Column(db.Integer, nullable=False)  # New column for durability rate
+    pace_rate = db.Column(db.Integer, nullable=False)        # New column for pace rate
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)  # Foreign key
 
     user = db.relationship('Users', backref='shoes')  # Establish relationship with User
+
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -83,11 +87,78 @@ def login():
     if not user or not bcrypt.check_password_hash(user.password_hash, data['password']):
         return jsonify({'error': 'Invalid email or password'}), 401
 
+    # Store the user ID in the session
+    session['user_id'] = user.id
+
     return jsonify({'message': 'Login successful', 'username': user.username})
 
 
-@app.route('/shoes', methods=['GET'])
-def get_running_shoes():
+client_secret = "b3cdf712eff0cf8fef5332ba80012b6cf1fff435"
+
+# Initialize the Strava client
+client = Client()
+
+# Replace with your application's Client ID and desired redirect URI
+client_id = '140518'
+redirect_uri = "http://127.0.0.1:5000/authorize"  # Must match Strava's settings
+
+@app.route('/check_strava', methods=['GET'])
+def check_strava_page():
+    return render_template('check_strava.html')
+
+@app.route('/connect_strava', methods=['GET'])
+def connect_strava():
+    authorize_url = client.authorization_url(
+        client_id=client_id,
+        redirect_uri=redirect_uri,
+        scope="read"
+    )
+    return redirect(authorize_url)
+
+@app.route('/authorize', methods=['GET'])
+def strava_callback():
+    code = request.args.get('code')
+    print(f"CODE = {code}")
+    if not code:
+        return jsonify({'error': 'Strava authorization failed'}), 400
+
+    # Exchange authorization code for access token
+    access_token = client.exchange_code_for_token(client_id=client_id, client_secret=client_secret, code=code)
+    client.access_token = access_token['access_token']
+
+    athlete = client.get_athlete()
+    print(
+    "For {id}, I now have an access token {token}".format(
+        id=athlete.id, token=access_token
+        )
+    )
+    # Mark the user as connected to Strava
+    if 'user_id' in session:
+        user = Users.query.get(session['user_id'])
+        if user:
+            user.strava_connected = True
+            db.session.commit()
+
+    return redirect(url_for('homepage'))
+
+# Route to display homepage information
+@app.route('/homepage', methods=['GET'])
+def homepage():
+    # Assume 'client' is initialized and authenticated
+    curr_athlete = client.get_athlete()
+    
+    # Extract relevant data from the athlete object
+    athlete_data = {
+        'id': curr_athlete.id,
+        'firstname': curr_athlete.firstname,
+        'lastname': curr_athlete.lastname,
+    }
+
+    return jsonify(athlete_data)
+
+
+@app.route('/view_shoes', methods=['GET'])
+def view_shoes():
     # Query all running shoes
     shoes = Shoes.query.all()
 
@@ -102,75 +173,40 @@ def get_running_shoes():
             "main_focus": shoe.main_focus,
             "eco_friendly": shoe.eco_friendly,
             "foot_type": shoe.foot_type,
+            "cushioning_rate": shoe.cushioning_rate,
+            "durability_rate": shoe.durability_rate,
+            "pace_rate": shoe.pace_rate,
+            "user_id": shoe.user_id,
         }
         for shoe in shoes
     ]
 
     return jsonify({"shoes": shoe_data})
+# @app.route('/associate_shoe', methods=['POST'])
+# def associate_shoe():
+#     data = request.json
+#     if not data or 'user_id' not in data or 'shoe_id' not in data:
+#         return jsonify({'error': 'Invalid data'}), 400
 
-# Route to display homepage information
-@app.route('/home', methods=['GET'])
-def homepage():
-    # For the sake of this example, assume a user with id 1 is logged in
-    logged_in_user_id = 1  # Replace this with session management in a real app
+#     # Verify user exists
+#     user = Users.query.get(data['user_id'])
+#     if not user:
+#         return jsonify({'error': 'User not found'}), 404
 
-    # Fetch user details
-    user = User.query.get(logged_in_user_id)
-    if not user:
-        return jsonify({'error': 'User not found'}), 404
+#     # Verify shoe exists
+#     shoe = Shoes.query.get(data['shoe_id'])
+#     if not shoe:
+#         return jsonify({'error': 'Shoe not found'}), 404
 
-    # Fetch shoes associated with the user (assumes a relationship exists)
-    # Adjust the database model if needed to include a relationship between User and Shoes
-    shoes = Shoes.query.filter_by(user_id=logged_in_user_id).first()  # Assumes one shoe per user
+#     # Check if the shoe is already associated with another user
+#     if shoe.user_id:
+#         return jsonify({'error': 'Shoe is already associated with a user'}), 409
 
-    if not shoes:
-        return jsonify({'error': 'Shoes not found for user'}), 404
+#     # Associate shoe with the user
+#     shoe.user_id = data['user_id']
+#     db.session.commit()
 
-    # Sample running data (replace with actual logic to fetch from the database)
-    total_km_run = 256  # Example data, replace with real value
-    remaining_km = shoes.mileage - total_km_run
-
-    # Construct the response
-    homepage_data = {
-        'user': {
-            'username': user.username,
-            'email': user.email,
-        },
-        'shoes': {
-            'brand': shoes.shoe_brand,
-            'model': shoes.model_name,
-            'remaining_km': remaining_km,
-            'total_km_run': total_km_run,
-        },
-    }
-
-    return jsonify(homepage_data)
-
-@app.route('/associate_shoe', methods=['POST'])
-def associate_shoe():
-    data = request.json
-    if not data or 'user_id' not in data or 'shoe_id' not in data:
-        return jsonify({'error': 'Invalid data'}), 400
-
-    # Verify user exists
-    user = User.query.get(data['user_id'])
-    if not user:
-        return jsonify({'error': 'User not found'}), 404
-
-    # Verify shoe exists
-    shoe = Shoes.query.get(data['shoe_id'])
-    if not shoe:
-        return jsonify({'error': 'Shoe not found'}), 404
-
-    # Check if the shoe is already associated with another user
-    if shoe.user_id:
-        return jsonify({'error': 'Shoe is already associated with a user'}), 409
-
-    # Associate shoe with the user
-    shoe.user_id = data['user_id']
-    db.session.commit()
-
-    return jsonify({'message': f'Shoe "{shoe.model_name}" successfully associated with user {user.username}!'})
+#     return jsonify({'message': f'Shoe "{shoe.model_name}" successfully associated with user {user.username}!'})
 
 
 

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Athlete Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        .container {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 8px;
+            display: inline-block;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        p {
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Athlete Profile</h1>
+        <p id="athlete-name">Loading...</p>
+    </div>
+
+    <script>
+        // Fetch athlete data from Flask
+        async function fetchAthlete() {
+            try {
+                const response = await fetch('http://127.0.0.1:5000/homepage');
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('athlete-name').textContent =
+                        `Name: ${data.firstname} ${data.lastname}`;
+                } else {
+                    document.getElementById('athlete-name').textContent = 'Failed to fetch athlete data.';
+                }
+            } catch (error) {
+                document.getElementById('athlete-name').textContent = 'Error fetching data.';
+                console.error(error);
+            }
+        }
+
+        // Call fetchAthlete on page load
+        fetchAthlete();
+    </script>
+</body>
+</html>
