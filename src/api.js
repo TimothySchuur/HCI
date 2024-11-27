@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: 'http://127.0.0.1:5000/api', // Base URL for the Flask backend
+  baseURL: 'http://127.0.0.1:5000', // Base URL for the Flask backend
   headers: {
     'Content-Type': 'application/json',
   },
