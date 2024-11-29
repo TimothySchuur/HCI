@@ -39,7 +39,7 @@ function setupThreeJS(canvas) {
 
     // Renderer
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-    renderer.setSize(shoeViewer.clientWidth, shoeViewer.clientHeight);
+    renderer.setSize(shoeViewer.clientWidth, shoeViewer.clientHeight); // Match viewer size
     renderer.setClearColor(0x000000, 0); // Set background transparent
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.shadowMap.enabled = true;
@@ -49,7 +49,8 @@ function setupThreeJS(canvas) {
     scene = new THREE.Scene();
 
     // Camera
-    camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
+    const aspectRatio = shoeViewer.clientWidth / shoeViewer.clientHeight;
+    camera = new THREE.PerspectiveCamera(25, aspectRatio, 1, 1000); // Adjusted FOV and aspect ratio
     camera.position.set(4, 5, 12);
 
     // Controls
@@ -57,7 +58,7 @@ function setupThreeJS(canvas) {
     controls.enableDamping = true;
     controls.enablePan = false;
     controls.minDistance = 8;
-    controls.maxDistance = 13;
+    controls.maxDistance = 12;
     controls.minPolarAngle = 0.6;
     controls.maxPolarAngle = Math.PI * 0.6;
     controls.target.set(0, 0, 0);

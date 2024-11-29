@@ -2,12 +2,11 @@
   <div id="shoe-viewer">
     <div class="bg"></div>
     <canvas ref="canvas"></canvas>
-    <div style="background-color: white; position: fixed">
+    <!-- <div style="background-color: white; position: fixed">
     <input type="range" id="colorSlider" min="0" max="8" v-model="colorIndex" @input="updateColor" />
-      </div>
+      </div> -->
   </div>
 </template>
-
 <script>
 import { onMounted, ref } from 'vue';
 import { setupThreeJS, updateShoeColor } from '../threeSetup';
@@ -41,13 +40,12 @@ export default {
   flex-direction: column;
   align-items: center;
   position: relative;
-  width: 50%;
-  height: 50%;
+  width: 100%;
+  height: 100%;
 }
 
 canvas {
-  width: 100%;
-  height: 100%;
+
 }
 
 input[type="range"] {
@@ -58,7 +56,6 @@ input[type="range"] {
 .bg {
   position: absolute;
   width: 320px;  /* Fixed width for consistent sizing */
-  height: 50%; /* Fixed height for consistent sizing */
   top: 25%; /* Adjust position as needed */
   background-color: rgb(23, 23, 23);
   border-radius: 8px;

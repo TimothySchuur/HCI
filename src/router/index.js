@@ -1,41 +1,47 @@
-import Router from "vue-router";
+import { createRouter, createWebHistory } from 'vue-router';
+import CushioningStatePage from '@/views/CushioningStatePage.vue';
+import ShoesComponent from '@/components/ShoesComponent.vue';
+import ShoeViewer from '@/components/ShoeViewer.vue';
+import FetchData from '@/components/FetchDataComponent.vue';
+import RegisterComponent from '@/components/RegisterComponent.vue';
 import Shoes from "@/components/Shoes.vue";
-import Register from "@/components/Register.vue"; // Import the new component
-import Vue from 'vue';
-import Homepage from '@/components/HomePage.vue';
-import Login from '@/components/Login.vue';
-import HomepageContent from '@/components/HomepageContent.vue';
 
-Vue.use(Router);
+const routes = [
+  {
+    path: '/home',
+    name: 'CushioningStatePage',
+    component: CushioningStatePage,
+  },
+  {
+    path: "/shoes",
+    name: "Shoes",
+    component: Shoes,
+  },
+  {
+    path: '/shoes-component',
+    name: 'ShoesComponent',
+    component: ShoesComponent,
+  },
+  {
+    path: '/shoe-view',
+    name: 'ShoeViewer',
+    component: ShoeViewer,
+  },
+  {
+    path: '/fetch-data',
+    name: 'FetchData',
+    component: FetchData,
+  },
+  {
+    path: '/register',
+    name: 'RegisterComponent',
+    component: RegisterComponent,
+  },
+];
 
-export default new Router({
-  routes: [
-    {
-      path: '/',
-      name: 'Homepage',
-      component: Homepage,
-    },
-    {
-      path: '/login',
-      name: 'Login',
-      component: Login,
-    },
-    {
-      path: '/home',
-      name: 'Home',
-      component: Home,
-    },
-    {
-      path: "/shoes",
-      name: "Shoes",
-      component: Shoes,
-    },
-    {
-      path: "/register", // Define the new route path
-      name: "Register", // Give it a unique name
-      component: Register, // Assign the component to render
-    },
-  ],
+const router = createRouter({
+  history: createWebHistory(),
+  routes,
 });
 
 
