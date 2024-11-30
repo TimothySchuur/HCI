@@ -57,7 +57,7 @@ export default {
 }
 /* Hamburger icon style */
 .hamburger-menu {
-  position: fixed;
+  position: absolute;
   margin:0;
   padding: 0;
   top: 20px;

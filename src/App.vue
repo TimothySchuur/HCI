@@ -1,5 +1,7 @@
 <template>
   <div id="app">
+    <!-- Add the HamburgerMenu Component -->
+    <HamburgerMenu />
     <!-- Navigation Bar -->
     <!-- <nav>
       <router-link to="/">Home</router-link>
@@ -8,15 +10,21 @@
 
 
     <!-- Router View for Dynamic Pages -->
-    <router-view />
+     <div class="content">
+        <router-view />
+    </div>
+    <NavBar />
   </div>
 </template>
 
 <script>
+import HamburgerMenu from '@/components/HamburgerMenu.vue'; 
+import NavBar from '@/components/NavBar.vue'; // Import the component
 import { defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'App',
+  components: { HamburgerMenu, NavBar}, 
 });
 </script>
 
@@ -64,9 +72,18 @@ h4{
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: absolute;
+  position: relative;
   height: 100vh;
-  width: 100vw;
+  width: 100%;
   background-color: #0D0D0D;
+  /* padding: 0 20px 0 20px; */
 }
+
+.content {
+  display: flex;
+  width: 100%;
+  justify-content: center; 
+}
+
+
 </style>

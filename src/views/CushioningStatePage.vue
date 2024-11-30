@@ -1,7 +1,5 @@
 <template>
-      <!-- Add the HamburgerMenu Component -->
-      <HamburgerMenu />
-  <div v-if="!profileClicked">
+  <div class="width" v-if="!profileClicked">
       <!-- Page Content -->
       <h1 class="title">CUSHIONING STATE</h1>
 
@@ -9,7 +7,6 @@
         <div class="container top">
           <div class="content top-c">
             <ShoeViewer />
-
           </div>
         </div>
         <div style="display: flex; flex-direction: row;">
@@ -52,12 +49,11 @@
   
   <script>
   import { ref } from 'vue'; // For Composition API
-  import HamburgerMenu from '@/components/HamburgerMenu.vue'; // Import the component
   import ShoeViewer from '@/components/ShoeViewer.vue'; // Import the component
   
   export default {
     name: 'CushioningStatePage', // Component name
-    components: { HamburgerMenu, ShoeViewer }, 
+    components: { ShoeViewer }, 
     setup() {
       // Reactive variables
       let kmRan = 12;
@@ -88,6 +84,10 @@
   </script>
   
   <style scoped>
+  .width{
+    width: 90%;
+  }
+
   button {
     background-color: #42b983;
     border: none;

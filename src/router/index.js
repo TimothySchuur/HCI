@@ -1,42 +1,34 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import CushioningStatePage from '@/views/CushioningStatePage.vue';
-import ShoesComponent from '@/components/ShoesComponent.vue';
-import ShoeViewer from '@/components/ShoeViewer.vue';
-import FetchData from '@/components/FetchDataComponent.vue';
-import RegisterComponent from '@/components/RegisterComponent.vue';
-import Shoes from "@/components/Shoes.vue";
+import ComparePage from '@/views/ComparePage.vue';
+import ShoeFinderPage from '@/views/ShoeFinder.vue';
+
+// import RegisterComponent from '@/components/RegisterComponent.vue';
 
 const routes = [
   {
-    path: '/home',
+    path: '/',
     name: 'CushioningStatePage',
     component: CushioningStatePage,
   },
   {
-    path: "/shoes",
-    name: "Shoes",
-    component: Shoes,
+    path: '/compare-shoes',
+    name: 'ComparePage',
+    component: ComparePage
   },
   {
-    path: '/shoes-component',
-    name: 'ShoesComponent',
-    component: ShoesComponent,
-  },
-  {
-    path: '/shoe-view',
-    name: 'ShoeViewer',
-    component: ShoeViewer,
-  },
-  {
-    path: '/fetch-data',
-    name: 'FetchData',
-    component: FetchData,
-  },
-  {
-    path: '/register',
-    name: 'RegisterComponent',
-    component: RegisterComponent,
-  },
+    path: '/shoe-finder',
+    name: 'ShoeFinderPage',
+    component: ShoeFinderPage,
+  }
+
+
+
+  // {
+  //   path: '/register',
+  //   name: 'RegisterComponent',
+  //   component: RegisterComponent,
+  // },
 ];
 
 const router = createRouter({
@@ -44,4 +36,5 @@ const router = createRouter({
   routes,
 });
 
+export default router;
 

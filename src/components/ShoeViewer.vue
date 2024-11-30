@@ -55,7 +55,7 @@ input[type="range"] {
 
 .bg {
   position: absolute;
-  width: 320px;  /* Fixed width for consistent sizing */
+  width: 100%;  /* Fixed width for consistent sizing */
   top: 25%; /* Adjust position as needed */
   background-color: rgb(23, 23, 23);
   border-radius: 8px;
