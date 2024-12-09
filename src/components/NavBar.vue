@@ -53,7 +53,7 @@
  <style>
 .pos-nav{
     width: 100%;
-    height: 70px;
+    height: 80px;
     position: absolute;
     bottom: 0;
     display: flex;

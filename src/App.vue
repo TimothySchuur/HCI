@@ -55,6 +55,21 @@ export default defineComponent({
   font-style: normal;  
 }
 
+@font-face {
+  font-family: 'Text';
+  src: url('./fonts/Kodchasan,Lexend_Deca/Sora/static/Sora-ExtraLight.ttf') format('truetype');
+  font-weight: normal; 
+  font-style: normal;  
+}
+
+@font-face {
+  font-family: 'Text-b';
+  src: url('./fonts/Kodchasan,Lexend_Deca/Sora/static/Sora-Regular.ttf') format('truetype');
+  font-weight: normal; 
+  font-style: normal;  
+}
+
+
 h1{
   font-family: 'Headers', sans-serif;
   font-size: 32px;
@@ -85,5 +100,19 @@ h4{
   justify-content: center; 
 }
 
+.text-s{
+  font-family: 'Text', sans-serif;
+  font-size: 16px;
+}
 
+.text-b{
+  font-family: 'Text-b', sans-serif;
+}
+
+.center{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-items: center;
+}
 </style>
