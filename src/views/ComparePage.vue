@@ -265,7 +265,7 @@ export default {
     });
 
     const mainContentStyle = computed(() =>
-      selectedShoe.value ? "height: 78%;" : "height: 55%;"
+      selectedShoe.value ? "height: 78%;" : "height: 56%;"
     );
 
     // Watcher to reset selectedShoe and filters when searchQuery changes
@@ -415,7 +415,7 @@ h3{
 }
 
 .container-rating{
-  /* margin-top: 6px; */
+  margin-top: 6px;
   height: 66px;
   width: 96px;
   position: relative;
