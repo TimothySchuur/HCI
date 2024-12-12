@@ -3,7 +3,12 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from stravalib import Client
-import requests
+# from __future__ import print_statement
+import time
+# import swagger_client
+# from swagger_client.rest import ApiException
+from pprint import pprint
+import pandas as pd
 import os
 
 # Flask app initialization
@@ -79,6 +84,7 @@ def login_page():
 @app.route('/login', methods=['POST'])
 def login():
     data = request.json
+    print(data)
     if not data or 'email' not in data or 'password' not in data:
         return jsonify({'error': 'Invalid data'}), 400
 
@@ -111,8 +117,9 @@ def connect_strava():
     authorize_url = client.authorization_url(
         client_id=client_id,
         redirect_uri=redirect_uri,
-        scope="read"
+        scope="read_all"
     )
+    print(authorize_url)
     return redirect(authorize_url)
 
 @app.route('/authorize', methods=['GET'])
@@ -139,11 +146,11 @@ def strava_callback():
             user.strava_connected = True
             db.session.commit()
 
-    return redirect(url_for('homepage'))
+    return redirect('http://localhost:8081/')
 
 # Route to display homepage information
-@app.route('/homepage', methods=['GET'])
-def homepage():
+@app.route('/profile', methods=['GET'])
+def profile():
     # Assume 'client' is initialized and authenticated
     curr_athlete = client.get_athlete()
     
@@ -156,32 +163,27 @@ def homepage():
 
     return jsonify(athlete_data)
 
+@app.route('/activities', methods=['GET'])
+def activities():
+    try:
+        # Fetch the athlete's activities (limit to 10 for example)
+        activities = client.get_activity()
+        return jsonify(activities)
+    except Exception as e:
+        print(f"Error fetching activities: {e}")
+        return jsonify({'error': 'Failed to fetch activities'}), 500
 
-@app.route('/view_shoes', methods=['GET'])
-def view_shoes():
-    # Query all running shoes
-    shoes = Shoes.query.all()
 
-    # Format the data as a list of dictionaries
-    shoe_data = [
-        {
-            "id": shoe.id,
-            "shoe_brand": shoe.shoe_brand,
-            "model_name": shoe.model_name,
-            "price": shoe.price,
-            "mileage": shoe.mileage,
-            "main_focus": shoe.main_focus,
-            "eco_friendly": shoe.eco_friendly,
-            "foot_type": shoe.foot_type,
-            "cushioning_rate": shoe.cushioning_rate,
-            "durability_rate": shoe.durability_rate,
-            "pace_rate": shoe.pace_rate,
-            "user_id": shoe.user_id,
-        }
-        for shoe in shoes
-    ]
+@app.route('/compare-shoes', methods=['GET'])
+def process_data():
+    try:
+        # Load the CSV file
+        df = pd.read_csv('./shoes.csv')
+        # Convert to JSON and return the response
+        return jsonify(df.to_dict(orient="records"))
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-    return jsonify({"shoes": shoe_data})
 # @app.route('/associate_shoe', methods=['POST'])
 # def associate_shoe():
 #     data = request.json

@@ -1,86 +1,131 @@
 <template>
   <div class="width" v-if="!profileClicked">
-      <!-- Page Content -->
-      <h1 class="title">CUSHIONING STATE</h1>
+    <!-- Page Content -->
+    <h1 class="title">CUSHIONING STATE</h1>
 
-      <div class="main">
-        <div class="container top">
-          <div class="content top-c">
-            <ShoeViewer />
+    <div class="main">
+      <div class="container top">
+        <div class="content top-c">
+          <ShoeViewer />
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: row;">
+        <div class="container">
+          <div class="content progress-bar">
+            <div class="progress" :style="{ height: cushioningPercentage + '%' }"></div>
           </div>
         </div>
-        <div style="display: flex; flex-direction: row;">
+        <div style="display: flex; flex-direction: column">
           <div class="container">
-            <div class="content progress-bar">
-              <div class="progress" :style="{ height: cushioningPercentage + '%' }"></div>
-              </div>
-          </div>
-          <div style="display: flex; flex-direction: column">
-            <div class="container">
-              <div class="content km-ran">
-                <div class="center"> 
+            <div class="content km-ran">
+              <div class="center"> 
                 <h1>{{ kmRan }} KM</h1>
                 <h4>RAN</h4>
-                </div>
               </div>
             </div>
-            <div class="container">
-              <div @click="profilePage" class="content profile">
-                <div class="center">
-                  <img class="profile-img" src="../img/profile-circle.svg">
-                  <h3 class="margin name">{{ name }}</h3>
-                  <h4 class="margin shoe">{{ shoe }}</h4>
-                </div>
+          </div>
+          <div class="container">
+            <div @click="profilePage" class="content profile">
+              <div class="center">
+                <img class="profile-img" src="../img/profile-circle.svg">
+                <h3 class="margin name">{{ name }}</h3>
+                <h4 class="margin shoe">{{ shoe }}</h4>
               </div>
             </div>
+          </div>
         </div>
-        </div>
-        
       </div>
-</div>
-<div v-else>
-  <p>Profile page</p>
-  <button @click="profilePage">Go back</button>
-</div>
+    </div>
+
+    <!-- Profile Overview Section -->
+    <div class="profile-overview">
+      <h2>Profile Overview</h2>
+      <p><strong>ID:</strong> {{ athleteData.id }}</p>
+      <p><strong>First Name:</strong> {{ athleteData.firstname }}</p>
+      <p><strong>Last Name:</strong> {{ athleteData.lastname }}</p>
+    </div>
+
+    <!-- Activities Section -->
+    <div class="activities">
+      <h2>Recent Activities</h2>
+      <ul>
+        <li v-for="activity in activities" :key="activity.id">
+          <p><strong>Name:</strong> {{ activity.name }}</p>
+          <p><strong>Distance:</strong> {{ (activity.distance / 1000).toFixed(2) }} km</p>
+          <p><strong>Date:</strong> {{ new Date(activity.start_date).toLocaleDateString() }}</p>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div v-else>
+    <p>Profile page</p>
+    <button @click="profilePage">Go back</button>
+  </div>
+</template>
+
 
   
-    
-  </template>
-  
-  <script>
-  import { ref } from 'vue'; // For Composition API
-  import ShoeViewer from '@/components/ShoeViewer.vue'; // Import the component
-  
-  export default {
-    name: 'CushioningStatePage', // Component name
-    components: { ShoeViewer }, 
-    setup() {
-      // Reactive variables
-      let kmRan = 12;
-      let name = "TIMOTHY";
-      let shoe = "Assics GEL-EXCITE 10";
-      let profileClicked = ref(false);
-      let cushioningPercentage = 80
+<script>
+import { ref } from 'vue';
+import axios from 'axios';
+import ShoeViewer from '@/components/ShoeViewer.vue';
 
-      // Methods
-      const profilePage = () => {
-  profileClicked.value = !profileClicked.value;
-  console.log(profileClicked.value); // Controleer de waarde
+export default {
+  name: 'CushioningStatePage',
+  components: { ShoeViewer },
+  setup() {
+    // Reactive variables
+    const kmRan = 12;
+    const name = "TIMOTHY";
+    const shoe = "Assics GEL-EXCITE 10";
+    const profileClicked = ref(false);
+    const cushioningPercentage = 80;
+    const athleteData = ref({});
+    const activities = ref([]); // Store activities
+
+    // Fetch Profile Data
+    const fetchProfileData = async () => {
+      try {
+        const response = await axios.get('http://127.0.0.1:5000/profile');
+        athleteData.value = response.data;
+      } catch (error) {
+        console.error('Error fetching profile data:', error);
+      }
+    };
+
+    // Fetch Activities
+    const fetchActivities = async () => {
+      try {
+        const response = await axios.get('http://127.0.0.1:5000/activities'); // Replace with your backend activities endpoint
+        activities.value = response.data;
+      } catch (error) {
+        console.error('Error fetching activities:', error);
+      }
+    };
+
+    // Fetch data on component mount
+    fetchProfileData();
+    fetchActivities();
+
+    // Methods
+    const profilePage = () => {
+      profileClicked.value = !profileClicked.value;
+    };
+
+    // Expose variables and methods to the template
+    return {
+      kmRan,
+      profilePage,
+      name,
+      shoe,
+      profileClicked,
+      cushioningPercentage,
+      athleteData,
+      activities, // Expose activities
+    };
+  },
 };
 
-  
-  
-      // Expose variables and methods to the template
-      return {
-        kmRan,
-        profilePage,
-        name,
-        shoe,
-        profileClicked,
-        cushioningPercentage
-      };
-    },
-  };
   </script>
   
   <style scoped>
@@ -195,6 +240,23 @@ background-color: #171717;
   background: linear-gradient(to top, #C5CBBF, #0A7A34);
   transition: height 0.3s ease; /* Smooth height transitions */
 }
+.profile-overview {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.profile-overview h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.profile-overview p {
+  margin: 5px 0;
+}
+
 
   </style>
   
