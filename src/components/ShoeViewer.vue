@@ -2,35 +2,67 @@
   <div id="shoe-viewer">
     <div class="bg"></div>
     <canvas ref="canvas"></canvas>
-    <div style="background-color: white; position: fixed">
-    <input type="range" id="colorSlider" min="0" max="8" v-model="colorIndex" @input="updateColor" />
-      </div>
   </div>
 </template>
 
 <script>
-import { onMounted, ref } from 'vue';
-import { setupThreeJS, updateShoeColor } from '../threeSetup';
+import { onMounted, ref, reactive, watch } from 'vue';
+import { setupThreeJS } from '../threeSetup';
 
 export default {
   name: 'ShoeViewer',
-  setup() {
+  props: {
+    progressGradient: {
+      type: String,
+      required: true
+    }
+  },
+  setup(props) {
     const canvas = ref(null);
-    const colorIndex = ref(0);
+    const rgbVue = reactive({ r: 20, g: 224, b: 97 });
+
+    // Function to dispatch the custom event with RGB values
+    const updateRgbVue = () => {
+      const event = new CustomEvent('adjustedTopColorUpdated', {
+        detail: `rgb(${rgbVue.r}, ${rgbVue.g}, ${rgbVue.b})`
+      });
+      window.dispatchEvent(event);
+    };
+
+    // Watch rgbVue for changes, dispatching an event each time
+    watch(rgbVue, updateRgbVue, { deep: true });
 
     onMounted(() => {
       setupThreeJS(canvas.value);
+
+      // Log the original progressGradient to see its value
+      console.log('Original progressGradient:', props.progressGradient);
+
+      // Update the regex to handle spaces and line breaks inside the rgb() value
+      const regex = /linear-gradient\([^\)]+,\s*(rgb\([^\)]+\))\)/;
+      const match = props.progressGradient.trim().match(regex);
+
+      if (match && match[1]) {
+        const rgb = match[1]; // Extracted RGB value
+        console.log('Extracted RGB:', rgb);
+
+        // Extract the numeric RGB values from the string and round them
+        const rgbValues = rgb.match(/\d+(\.\d+)?/g).map(Number); // This also handles decimals
+        const roundedRgbValues = rgbValues.map(value => Math.round(value));
+
+        // Construct the rounded RGB string
+        const roundedRgbString = `rgb(${roundedRgbValues.join(', ')})`;
+
+        // Dispatch custom event with the rounded RGB value
+        const event = new CustomEvent('adjustedTopColorUpdated', { detail: roundedRgbString });
+        window.dispatchEvent(event);
+      } else {
+        console.log('No match found for the regex');
+      }
     });
 
-    const updateColor = () => {
-      updateShoeColor(colorIndex.value);
-    };
-
-    return {
-      canvas,
-      colorIndex,
-      updateColor
-    };
+    // Return the necessary bindings to the template
+    return { canvas, rgbVue, updateRgbVue };
   }
 };
 </script>
@@ -41,28 +73,19 @@ export default {
   flex-direction: column;
   align-items: center;
   position: relative;
-  width: 50%;
-  height: 50%;
-}
-
-canvas {
   width: 100%;
-  height: 100%;
+  height: 100%; /* Ensure the container has full height */
 }
-
-input[type="range"] {
-  margin-top: 10px;
-  width: 80%;
+canvas {
+  position: absolute;
+  z-index: 10; /* Adjust the z-index of the canvas to avoid covering .bg */
 }
-
 .bg {
   position: absolute;
-  width: 320px;  /* Fixed width for consistent sizing */
-  height: 50%; /* Fixed height for consistent sizing */
-  top: 25%; /* Adjust position as needed */
+  width: 100%;
+  top: 25%;
   background-color: rgb(23, 23, 23);
   border-radius: 8px;
-  /*border: 3px solid rgb(33, 33, 33);*/
   z-index: -1;
 }
 

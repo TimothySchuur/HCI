@@ -35,7 +35,7 @@ import { onMounted, ref } from 'vue';
 import axios from 'axios';
 
 export default {
-  name: 'Shoes',
+  name: 'ShoesComponent',
   setup() {
     const shoes = ref([]);
 
