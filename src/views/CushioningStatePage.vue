@@ -29,18 +29,18 @@
                 <div class="center"> 
                 <h1>{{ kmRan }} KM</h1>
                 <h4>RAN</h4>
-                </div>
               </div>
             </div>
-            <div class="container">
-              <div @click="profilePage" class="content profile">
-                <div class="center">
-                  <img class="profile-img" src="../img/profile-circle.svg">
-                  <h3 class="margin name">{{ name }}</h3>
-                  <h4 class="margin shoe">{{ shoe }}</h4>
-                </div>
+          </div>
+          <div class="container">
+            <div @click="profilePage" class="content profile">
+              <div class="center">
+                <img class="profile-img" src="../img/profile-circle.svg">
+                <h3 class="margin name">{{ name }}</h3>
+                <h4 class="margin shoe">{{ shoe }}</h4>
               </div>
             </div>
+          </div>
         </div>
         </div>
       </div>
