@@ -7,11 +7,13 @@ from stravalib import Client
 import time
 from pprint import pprint
 import pandas as pd
+from dotenv import load_dotenv
 import os
 
 # Flask app initialization
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
+load_dotenv()
 
 @app.after_request
 def after_request(response):
@@ -21,12 +23,10 @@ def after_request(response):
     return response
 
 # Database configuration
-app.config['JWT_SECRET_KEY'] = 'your-secret-key'
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your_secret_key')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
-    'DATABASE_URI',
-    'postgresql://reinierbos:password@localhost:5432/hci_db'  # Default for local development
-)
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
+
 db = SQLAlchemy(app)
 jwt = JWTManager(app)
 bcrypt = Bcrypt(app)
@@ -168,14 +168,15 @@ def logout():
     revoked_tokens.add(token_jti)
     return jsonify({'message': 'Successfully logged out'}), 200
 
-client_secret = "b3cdf712eff0cf8fef5332ba80012b6cf1fff435"
+
+client_secret = os.getenv('STRAVA_CLIENT_SECRET')
 
 # Initialize the Strava client
 client = Client()
 
 # Replace with your application's Client ID and desired redirect URI
-client_id = '140518'
-redirect_uri = "http://127.0.0.1:5000/authorize"  # Must match Strava's settings
+client_id = os.getenv('STRAVA_CLIENT_ID')
+redirect_uri = os.getenv('STRAVA_REDIRECT_URI') # Must match Strava's settings
 
 @app.route('/check_strava', methods=['GET'])
 def check_strava_page():
