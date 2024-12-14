@@ -180,7 +180,7 @@
 
 // export { setupThreeJS };
 
-import { onMounted, reactive, watch, ref } from 'vue';
+import { reactive  } from 'vue'; // onMounted, watch, ref
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -244,11 +244,11 @@ function setupThreeJS(canvas) {
             rgbVue.g = rgbValues[1];
             rgbVue.b = rgbValues[2];
     
-            if (shoeModel) { // Only call if shoeModel is loaded
-                reloadShoeColor();
-            } else {
-                console.warn('Shoe model is not loaded yet; color change will be applied later.');
-            }
+            // if (shoeModel) { // Only call if shoeModel is loaded
+            //     reloadShoeColor();
+            // } else {
+            //     console.warn('Shoe model is not loaded yet; color change will be applied later.');
+            // }
         }
     });
     
@@ -261,16 +261,16 @@ function setupThreeJS(canvas) {
 
     // Load Shoe Model
     const loader = new GLTFLoader();
-    let isShoeModelLoaded = false;
+    // let isShoeModelLoaded = false;
 
     loader.load('Shoes-Make.gltf', (gltf) => {
         shoeModel = gltf.scene;
-        isShoeModelLoaded = true;
+        // isShoeModelLoaded = true;
         const boundingBox = new THREE.Box3().setFromObject(shoeModel);
         const center = boundingBox.getCenter(new THREE.Vector3());
         shoeModel.position.sub(center);
         shoeGroup.add(shoeModel);
-        reloadShoeColor(); // Process pending updates
+        // reloadShoeColor(); // Process pending updates
     });
 
     
@@ -333,23 +333,23 @@ function createCustomMaterial() {
     });
 }
 
-function reloadShoeColor() {
-    if (!isShoeModelLoaded) {
-        console.warn("Shoe model is not loaded yet.");
-        return;
-    }
+// function reloadShoeColor() {
+//     if (!isShoeModelLoaded) {
+//         console.warn("Shoe model is not loaded yet.");
+//         return;
+//     }
 
-    shoeModel.traverse((child) => {
-        if (child.isMesh) {
-            child.castShadow = true;
-            child.receiveShadow = true;
-            child.material =
-                child.name === "Plane" || child.name === "Plane_1"
-                    ? customMaterial
-                    : new THREE.MeshPhongMaterial({ color: new THREE.Color(0, 0, 0), shininess: 10 });
-        }
-    });
-}
+//     shoeModel.traverse((child) => {
+//         if (child.isMesh) {
+//             child.castShadow = true;
+//             child.receiveShadow = true;
+//             child.material =
+//                 child.name === "Plane" || child.name === "Plane_1"
+//                     ? customMaterial
+//                     : new THREE.MeshPhongMaterial({ color: new THREE.Color(0, 0, 0), shininess: 10 });
+//         }
+//     });
+// }
 
 
 

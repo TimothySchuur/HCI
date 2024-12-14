@@ -39,7 +39,7 @@ export default {
       console.log('Original progressGradient:', props.progressGradient);
 
       // Update the regex to handle spaces and line breaks inside the rgb() value
-      const regex = /linear-gradient\([^\)]+,\s*(rgb\([^\)]+\))\)/;
+      const regex = /linear-gradient\([^)]+,\s*(rgb\([^)]+\))\)/;
       const match = props.progressGradient.trim().match(regex);
 
       if (match && match[1]) {

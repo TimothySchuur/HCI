@@ -7,18 +7,18 @@ import Register from "@/components/RegisterComponent.vue"; // Import the new com
 
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from '@/views/CushioningStatePage.vue';
-// import ComparePage from '@/views/ComparePage.vue';
+import ComparePage from '@/views/ComparePage.vue';
 import Shoes from '@/views/ShoeFinder.vue';
 import Login from '@/views/LoginPage.vue';
 import StravaPage from '@/views/StravaPage.vue';
 
 
 const routes = [
-  // {
-  //   path: '/',
-  //   name: 'Homepage',
-  //   component: Homepage,
-  // },
+  {
+    path: '/compare',
+    name: 'ComparePage',
+    component: ComparePage,
+  },
   {
     path: '/login',
     name: 'Login',
