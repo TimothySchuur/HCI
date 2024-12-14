@@ -1,21 +1,25 @@
 <template>
-  <div class="hamburger-menu" @click="toggleMenu">
-    <div :class="['bar', { active: isOpen }]"></div>
-    <div :class="['bar', { active: isOpen }]"></div>
-    <div :class="['bar', { active: isOpen }]"></div>
-  </div>
-
-  <!-- The menu content that slides in -->
-  <transition 
-    name="menu-slide"
-    @before-enter="beforeEnter"
-    @enter="enter"
-    @leave="leave"
-  >
-    <div v-show="isOpen" class="menu-content">
-      <h4>This is the menu content! Add your links or navigation here.</h4>
+  <div>
+    <!-- Hamburger Menu Icon -->
+    <div class="hamburger-menu" @click="toggleMenu">
+      <div :class="['bar', { active: isOpen }]"></div>
+      <div :class="['bar', { active: isOpen }]"></div>
+      <div :class="['bar', { active: isOpen }]"></div>
     </div>
-  </transition>
+
+    <!-- The menu content that slides in -->
+    <transition
+      name="menu-slide"
+      @before-enter="beforeEnter"
+      @enter="enter"
+      @leave="leave"
+    >
+      <div v-show="isOpen" class="menu-content">
+        <h4>This is the menu content! Add your links or navigation here.</h4>
+        <button class="logout-button" @click="logout">Logout</button>
+      </div>
+    </transition>
+  </div>
 </template>
 
 <script>
@@ -23,7 +27,7 @@ export default {
   name: 'HamburgerMenu',
   data() {
     return {
-      isOpen: false,  // Track if the menu is open or closed
+      isOpen: false, // Track if the menu is open or closed
     };
   },
   methods: {
@@ -45,20 +49,29 @@ export default {
     leave(el, done) {
       el.style.opacity = '0'; // Fade out the menu
       done();
-    }
-  }
+    },
+    logout() {
+      // Clear the authentication token from localStorage
+      localStorage.removeItem('authToken');
+
+      // Close the menu
+      this.isOpen = false;
+
+      // Redirect to login page
+      this.$router.push('/login');
+    },
+  },
 };
 </script>
 
-
 <style scoped>
-*{
-  color: #0D0D0D;
+* {
+  color: #0d0d0d;
 }
 /* Hamburger icon style */
 .hamburger-menu {
   position: absolute;
-  margin:0;
+  margin: 0;
   padding: 0;
   top: 20px;
   right: 20px;
@@ -105,16 +118,19 @@ export default {
 }
 
 /* Transition classes for sliding in and out */
-.menu-slide-enter-active, .menu-slide-leave-active {
+.menu-slide-enter-active,
+.menu-slide-leave-active {
   transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
 }
 
-.menu-slide-enter, .menu-slide-leave-to {
+.menu-slide-enter,
+.menu-slide-leave-to {
   transform: translateX(100%); /* Off-screen position */
   opacity: 0; /* Start with opacity 0 */
 }
 
-.menu-slide-enter-to, .menu-slide-leave {
+.menu-slide-enter-to,
+.menu-slide-leave {
   transform: translateX(0); /* On-screen position */
   opacity: 1; /* Fade in/out */
 }
@@ -124,5 +140,22 @@ export default {
   padding: 20px;
   text-align: right;
 }
-</style>
 
+.logout-button {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: #d32f2f;
+}
+</style>

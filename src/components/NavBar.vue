@@ -1,12 +1,12 @@
 <template>
     <div class="pos-nav">
-      <div @click="$router.push('/compare-shoes')" class="pos-icon">
+      <div @click="$router.push('/compare')" class="pos-icon">
         <img :src="imageSource1" />
       </div>
-      <div @click="$router.push('/')" class="pos-icon">
+      <div @click="$router.push('/home')" class="pos-icon">
         <img :src="imageSource2" />
       </div>
-      <div @click="$router.push('/shoe-finder')" class="pos-icon">
+      <div @click="$router.push('/shoes')" class="pos-icon">
         <img :src="imageSource3" />
       </div>
     </div>

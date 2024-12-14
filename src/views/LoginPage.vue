@@ -34,6 +34,7 @@
   <script>
   import { ref } from 'vue';
   import { useRouter } from 'vue-router';
+  import axios from 'axios';
 
   
   export default {
@@ -57,31 +58,19 @@
         loginError.value = '';
         signupError.value = '';
       };
-  
-      // Handle login
       const handleLogin = async () => {
-        try {
-          const response = await fetch('http://localhost:5000/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              email: loginEmail.value,
-              password: loginPassword.value,
-            }),
-          });
-  
-          const data = await response.json();
-          if (response.ok) {
-            alert(data.message);
-            router.push('/connect-strava'); // Redirect to the strava page
-          } else {
-            loginError.value = data.error;
-          }
-        } catch (error) {
-          loginError.value = 'An error occurred. Please try again.';
-        }
-      };
-  
+  try {
+    const response = await axios.post('http://localhost:5000/login', {
+      email: loginEmail.value,
+      password: loginPassword.value,
+    });
+    localStorage.setItem('authToken', response.data.token); // Save token
+    console.log('Token stored:', response.data.token); // Debug
+    router.push('/connect-strava'); // Redirect after login
+  } catch (error) {
+    console.error('Login failed:', error.response?.data || error.message);
+  }
+};  
       // Handle signup
       const handleSignUp = async () => {
         try {
