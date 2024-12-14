@@ -1,2 +1,15 @@
 node_modules
 node_modules
+# Ignore sensitive files
+.env
+
+# Ignore Python virtual environment
+venv/
+
+# Ignore compiled Python files
+__pycache__/
+*.pyc
+
+# Ignore logs and temporary files
+*.log
+*.tmp
