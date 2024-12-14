@@ -3,10 +3,7 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from stravalib import Client
-# from __future__ import print_statement
 import time
-# import swagger_client
-# from swagger_client.rest import ApiException
 from pprint import pprint
 import pandas as pd
 import os
@@ -114,10 +111,14 @@ def check_strava_page():
 
 @app.route('/connect_strava', methods=['GET'])
 def connect_strava():
-    authorize_url = client.authorization_url(
-        client_id=client_id,
-        redirect_uri=redirect_uri,
-        scope="read_all"
+    scope = 'activity:read_all'
+    authorize_url = (
+        f"https://www.strava.com/oauth/authorize?"
+        f"client_id={client_id}&"
+        f"redirect_uri={redirect_uri}&"
+        f"response_type=code&"
+        f"approval_prompt=force&"
+        f"scope={scope}"
     )
     print(authorize_url)
     return redirect(authorize_url)
@@ -130,15 +131,24 @@ def strava_callback():
         return jsonify({'error': 'Strava authorization failed'}), 400
 
     # Exchange authorization code for access token
-    access_token = client.exchange_code_for_token(client_id=client_id, client_secret=client_secret, code=code)
-    client.access_token = access_token['access_token']
-
-    athlete = client.get_athlete()
-    print(
-    "For {id}, I now have an access token {token}".format(
-        id=athlete.id, token=access_token
-        )
+    # access_token = client.exchange_code_for_token(client_id=client_id, client_secret=client_secret, code=code)
+    access_token_response = client.exchange_code_for_token(
+        client_id=client_id, 
+        client_secret=client_secret, 
+        code=code
     )
+    client.access_token = access_token_response['access_token']
+    client.refresh_token = access_token_response['refresh_token']
+    client.token_expires_at = access_token_response['expires_at']
+
+    if time.time() > client.token_expires_at:
+        refresh_response = client.refresh_access_token(
+            client_id=140518, client_secret="b3cdf712eff0cf8fef5332ba80012b6cf1fff435", refresh_token=client.refresh_token
+        )
+        client.access_token = refresh_response["access_token"]
+        client.refresh_token = refresh_response["refresh_token"]
+        client.expires_at = refresh_response["expires_at"]
+
     # Mark the user as connected to Strava
     if 'user_id' in session:
         user = Users.query.get(session['user_id'])
@@ -146,7 +156,30 @@ def strava_callback():
             user.strava_connected = True
             db.session.commit()
 
-    return redirect('http://localhost:8081/')
+    return redirect('http://localhost:8081/home')
+
+@app.route('/activities', methods=['GET'])
+def activities():
+    try:
+        # Fetch activities using the Strava client
+        activities = client.get_activities(limit=10)
+        
+        # Extract relevant information and preprocess distance
+        activities_list = []
+        for activity in activities:
+            activities_list.append({
+                'name': activity.name,
+                'distance': activity.distance.magnitude if hasattr(activity.distance, 'magnitude') else None,  # Extract numeric value
+            })
+
+
+        # Return the preprocessed activities as JSON
+        return jsonify(activities_list)
+    except Exception as e:
+        print(f"Error fetching activities: {e}")
+        return jsonify({'error': 'Failed to fetch activities'}), 500
+
+
 
 # Route to display homepage information
 @app.route('/profile', methods=['GET'])
@@ -162,17 +195,6 @@ def profile():
     }
 
     return jsonify(athlete_data)
-
-@app.route('/activities', methods=['GET'])
-def activities():
-    try:
-        # Fetch the athlete's activities (limit to 10 for example)
-        activities = client.get_activity()
-        return jsonify(activities)
-    except Exception as e:
-        print(f"Error fetching activities: {e}")
-        return jsonify({'error': 'Failed to fetch activities'}), 500
-
 
 @app.route('/compare-shoes', methods=['GET'])
 def process_data():

@@ -46,13 +46,26 @@
       </div>
   </div>
   <div v-else>
-    <p>Profile page</p>
-    <button @click="profilePage">Go back</button>
+  <h2>Profile Page</h2>
+  <button @click="profilePage">Go back</button>
+  <!-- Display fetched data -->
+  <div v-if="activities.length > 0">
+    <ul class="activity-list">
+      <li v-for="(activity, index) in activities" :key="index" class="activity-item">
+        <strong>{{ activity.name }}</strong>
+        <p>Distance: {{ activity.distance }} meters</p>
+      </li>
+    </ul>
   </div>
+  <div v-else>
+    <p>Loading activities...</p>
+  </div>
+</div>
 </template>
 
 <script>
-import { ref, computed, watch } from 'vue'; 
+import { ref, computed, watch, onMounted } from 'vue'; 
+import axios from 'axios'; // Import Axios
 import ShoeViewer from '@/components/ShoeViewer.vue'; // Import the component
   
 export default {
@@ -66,11 +79,32 @@ export default {
     let profileClicked = ref(false);
     let cushioningPercentage = 99;
 
+    // Data for activities
+    const activities = ref([]);
+
     // Methods
     const profilePage = () => {
       profileClicked.value = !profileClicked.value;
       console.log(profileClicked.value); // Check the value
     };
+
+    const fetchActivities = async () => {
+  try {
+    const response = await axios.get('http://localhost:5000/activities');
+    console.log('Fetched Activities:', response.data); // Log the API response
+    activities.value = response.data.map(activity => ({
+      name: activity.name,
+      distance: activity.distance ? activity.distance.toFixed(2) : 'N/A', // Use distance directly
+    }));
+  } catch (error) {
+    console.error('Error fetching activities:', error);
+  }
+};
+
+    // Fetch activities when the component mounts
+    onMounted(() => {
+      fetchActivities();
+    });
 
     // Computed property for dynamic gradient
     const progressGradient = computed(() => {
@@ -96,12 +130,11 @@ export default {
       profileClicked,
       cushioningPercentage,
       progressGradient,
-      
+      activities, // Expose activities
     };
   },
 };
 </script>
-
   
   <style scoped>
   .width{
