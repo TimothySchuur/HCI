@@ -14,7 +14,7 @@
     <div v-if="!selectedShoe" :style="questionNum == 3 ? 'bottom: -11.4%' : 'bottom: 0'" class="content">
 
 
-      <p class="question">{{ question[questionNum] }}</p>
+      <p :style="questionNum == 4 ? 'margin-bottom: 12px' : ''"  class="question">{{ question[questionNum] }}</p>
 
       <div class="pos-btn" v-if="questionNum === 0">
         <button class="btn-gradient" @click="questionNum++">START</button>
@@ -58,31 +58,38 @@
 
       <!-- Conditional rendering of mileage options -->
       <div v-if="questionNum === 4">
-        <!-- Slider -->
-      <div class="slider-container">
-        <!-- Value Box Above the Slider -->
-        <div 
-          v-if="plannedMaxDistance" 
-          class="value-box" 
-          :style="{ 
-            left: `${sliderPosition}%`, 
-            transform: 'translateX(-50%)', /* Center the value box horizontally */
-            bottom: '20px' /* Adjust to place it above the slider */
-          }"
-        >
-          {{ plannedMaxDistance }}
+       <!-- Slider -->
+        <div class="slider-container">
+          <div style="position: absolute; width: 77%; left: 50%; transform: translateX(-50%);">
+            <div 
+              v-if="plannedMaxDistance" 
+              class="value-box" 
+              :style="{ left: `${sliderPosition}%`, transform: 'translateX(-50%)' }"
+            >
+              {{ plannedMaxDistance }}
+            </div>
+          </div>
+
+          <input 
+            class="slider" 
+            v-model="plannedMaxDistance" 
+            min="0" 
+            max="50" 
+            step="5" 
+            type="range"
+            @input="updateSliderPosition"
+            :style="sliderBackgroundStyle"
+          >
+          <div class="planned-distances">
+            <p class="dist" style="left: 0">0</p>
+            <p class="dist" style="left: 20%">10</p>
+            <p class="dist" style="left: 40%">20</p>
+            <p class="dist" style="left: 60%">30</p>
+            <p class="dist" style="left: 80%">40</p>
+            <p class="dist" style="left: 100%">50</p>
+          </div>
         </div>
 
-        <input 
-          class="slider" 
-          v-model="plannedMaxDistance" 
-          min="0" 
-          max="50" 
-          step="5" 
-          type="range"
-          @input="updateSliderPosition"
-        >
-      </div>
 
 
         <button
@@ -91,7 +98,7 @@
           class="btn-gradient"
           @click="setFilter('mileage', option)"
         >
-          {{ option }}
+          CONTINUE
         </button>
       </div>
       
@@ -133,7 +140,7 @@ import { ref, computed, onMounted } from "vue";
 export default {
   name: "ComparePage",
   setup() {
-    const questionNum = ref(0);
+    const questionNum = ref(0 );
     const question = ref([
       "Answer 4 quick questions to find the perfect running shoes for you!", 
       "What type of shoes are you looking for?", 
@@ -141,6 +148,9 @@ export default {
       "What describes your foot type best?", 
       "Wat is the longest distance you plan to run in this shoes?"
     ]);
+    const sliderBackgroundStyle = ref({
+      background: "linear-gradient(to right, #14DF61 50%, #D9D9D9 50%)" // initial background
+    });
     const data = ref([]);
     const searchQuery = ref("");
     const selectedShoe = ref(null);
@@ -237,8 +247,15 @@ export default {
     });
 
     const updateSliderPosition = () => {
-      sliderPosition.value = (plannedMaxDistance.value / 50) * 100;
-    }
+  sliderPosition.value = (plannedMaxDistance.value / 50) * 100;
+
+  // Update slider background color based on the slider position
+  sliderBackgroundStyle.value = {
+    background: `linear-gradient(to right, #14DF61 ${sliderPosition.value}%, #D9D9D9 ${sliderPosition.value}%)`
+  };
+};
+
+
     const calculateSimilarity = (shoe) => {
       if (!selectedShoe.value) return 0;
       let score = 0;
@@ -280,6 +297,7 @@ export default {
   footTypeOptions,
   selectedGender,
   selectedMileage,
+  sliderBackgroundStyle,
   selectedMainFocus,
   selectedFootType,
   plannedMaxDistance,
@@ -600,41 +618,13 @@ p {
   border-radius: 8px;
   display: flex;
   justify-content: center;
-}
-
-input[type="range"] {
-  -webkit-appearance: none;
-  appearance: none;
-  background: transparent;
-  cursor: pointer;
-}
-
-input[type="range"]::-webkit-slider-runnable-track {
-  background: #14DF61;
-  height: 0.5rem;
-  border-radius: 3px; /* Round the track */
-  outline: none; /* Remove focus outline */
-}
-
-input[type="range"]::-webkit-slider-thumb {
-   -webkit-appearance: none; /* Override default look */
-   appearance: none;
-   margin-top: -4px; /* Centers thumb on the track */
-   background-color: #0B7C36;
-   height: 1rem; /* Makes the thumb circular by matching height and width */
-   width: 1rem; /* Same as height for a circle */
-   border-radius: 50%; /* Ensures it is a circle */
-}
-
-.slider {
-  width: 80%;
-  color: #14E161;
+  margin-bottom: 12px;
 }
 
 .value-box {
   clip-path: polygon(0% 0%, 0% 75%, 50% 100%, 100% 75%, 100% 0%);
   position: absolute;
-  bottom: 64px;
+  top: 0px;
   transform: translateX(-50%);
   background-color: #D9D9D9;
   color: #171717;
@@ -648,4 +638,58 @@ input[type="range"]::-webkit-slider-thumb {
 .slider:focus + .value-box {
   display: block;
 }
+
+.slider {
+  width: 80%;
+  top: 50%;
+  transform: translateY(-50%);
+  position: absolute;
+  height: 8px;
+  background: linear-gradient(to right, #0B7B35 0%, #14E161 100%); /* Default color */
+  border-radius: 10px;
+  outline: none;
+  appearance: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+   -webkit-appearance: none; /* Override default look */
+   appearance: none;
+   margin-top: -4px; /* Centers thumb on the track */
+   background-color: #0B7C36;
+   height: 1rem; /* Makes the thumb circular by matching height and width */
+   width: 1rem; /* Same as height for a circle */
+   border-radius: 50%; /* Ensures it is a circle */
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  /* background: #14DF61; */
+  height: 0.5rem;
+  border-radius: 3px; /* Round the track */
+  outline: none; /* Remove focus outline */
+}
+
+.planned-distances{
+  width: 75%;
+  position: relative;
+  left: -2%;
+  top: 66%;
+  /* transform: translateX(-50%); */
+}
+
+.dist{
+  width: 10px;
+  box-sizing: border-box;
+  position: absolute;
+  text-align: left;
+  font-family: 'Light', sans-serif;
+  font-size: 14px;
+}
+
 </style>
