@@ -253,11 +253,11 @@ export default {
     const filteredData = computed(() => {
       const query = searchQuery.value.toLowerCase().trim();
   
-      return data.value.filter((shoe) => {
-        const matchesSearch = `${shoe.shoe_brand} ${shoe.model_name}`
-          .toLowerCase()
-          .includes(query);
-            
+    return data.value.filter((shoe) => {
+      const matchesSearch = `${shoe.shoe_brand} ${shoe.model_name}`
+        .toLowerCase()
+        .includes(query);
+          
           const matchesGender = 
           !selectedGender.value || 
           (selectedGender.value === "Male" ? shoe.gender.includes("Men") || shoe.gender.includes("Unisex") : 

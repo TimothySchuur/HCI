@@ -598,31 +598,6 @@ button{
   border: solid #212121 3px;
 }
 
-.search-container {
-  position: relative;
-  display: inline-block;
-  width: 100%;
-}
-
-.search-bar {
-  width: 100%;
-  background-color: #171717;
-  border-radius: 8px;
-  border-style: none;
-  padding: 8px;
-  margin-top: 20px;
-  font-size: 16px;
-  box-sizing: border-box;
-  color: #3F3F3F;
-  font-family: 'Text', sans-serif;
-}
-
-.search-icon {
-  position: absolute;
-  right: 10px;
-  top: 45%;
-  pointer-events: none;
-}
 
 .main-content {
   margin-top: 20.5%;
