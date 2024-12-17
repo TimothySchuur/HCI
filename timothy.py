@@ -17,7 +17,7 @@ redirect_uri = "http://127.0.0.1:5000/authorize"  # Must match Strava's settings
 # Create OAuth2 session
 client = OAuth2Session(client_id, redirect_uri=redirect_uri)
 
-@app.route('/compare-shoes', methods=['GET'])
+@app.route('/compare', methods=['GET'])
 def process_data():
     try:
         # Load the CSV file

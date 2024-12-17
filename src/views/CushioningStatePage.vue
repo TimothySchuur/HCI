@@ -108,7 +108,7 @@ export default {
     const shoes = ref([]);
     const shoeSelectionOpen = ref(false);
     const profileClicked = ref(false);
-    const cushioningPercentage = 99;
+    const cushioningPercentage = 79;
     const kmRan = ref(0); // Initialize mileage run
     const totalMileageAllowed = ref(0); // Initialize total mileage allowed
     const activities = ref([]);
@@ -300,6 +300,9 @@ export default {
   }
   .width{
     width: 90%;
+    position: absolute;
+    left:50%;
+    transform: translateX(-50%);
   }
 
   button {
@@ -318,7 +321,7 @@ export default {
   .title{
     width: 60%;
     text-align: left;
-    margin-top: 80px;
+    margin-top: 22.8%;
   }
 
   .container{

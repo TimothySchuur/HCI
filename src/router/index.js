@@ -15,7 +15,7 @@ import StravaPage from '@/views/StravaPage.vue';
 
 const routes = [
   {
-    path: '/compare-shoes',
+    path: '/compare',
     name: 'ComparePage',
     component: ComparePage,
   },
@@ -25,12 +25,12 @@ const routes = [
     component: Login,
   },
   {
-    path: '/',
+    path: '/home',
     name: 'Home',
     component: Home,
   },
   {
-    path: "/shoe-finder",
+    path: "/shoes",
     name: "Shoes",
     component: Shoes,
   },

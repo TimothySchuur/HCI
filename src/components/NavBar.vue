@@ -24,8 +24,8 @@
   
       // Reactive computed property to determine the image source
       const isCompareRoute = computed(() => route.path.includes('compare'));
-      const isHomeRoute = computed(() => route.path === '/');
-      const isShoeFinderRoute = computed(() => route.path.includes('finder'));
+      const isHomeRoute = computed(() => route.path === '/home' || route.path === '/login' );
+      const isShoeFinderRoute = computed(() => route.path.includes('shoes'));
   
       const imageSource1 = computed(() =>
         isCompareRoute.value ? require('@/img/Compare-active.svg') : require('@/img/Compare.svg')

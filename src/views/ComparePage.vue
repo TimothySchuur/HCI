@@ -243,7 +243,7 @@ export default {
 
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:5000/compare-shoes");
+        const response = await axios.get("http://127.0.0.1:5000/compare");
         data.value = response.data;
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -252,10 +252,12 @@ export default {
 
     const filteredData = computed(() => {
       const query = searchQuery.value.toLowerCase().trim();
+  
       return data.value.filter((shoe) => {
         const matchesSearch = `${shoe.shoe_brand} ${shoe.model_name}`
+          .toLowerCase()
           .includes(query);
-        
+            
           const matchesGender = 
           !selectedGender.value || 
           (selectedGender.value === "Male" ? shoe.gender.includes("Men") || shoe.gender.includes("Unisex") : 
@@ -365,7 +367,7 @@ h3{
 .title {
   width: 60%;
   text-align: left;
-  margin-top: 80px;
+  margin-top: 22.8%;
 }
 
 .search-container {

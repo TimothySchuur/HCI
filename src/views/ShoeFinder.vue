@@ -1,109 +1,209 @@
 <template>
-   <div v-if="questionNum>0" class="pos-back">
+    <div v-if="questionNum > 0 && questionNum <= 4 " class="pos-back">
       <div style="flex-direction: column;" @click="questionNum--">
         <p class="questionNum">{{ questionNum }} / 4</p>
         <img style="margin-top: 12px;" src="../img/arrow_back_24dp_3F3F3F_FILL0_wght400_GRAD0_opsz24.svg">
       </div>
    </div>
+   <div v-if="questionNum > 4" class="pos-restart">
+      <div style="flex-direction: row;">
+        <img @click="questionNum--" style="height: 32px;" src="../img/arrow_back_24dp_3F3F3F_FILL0_wght400_GRAD0_opsz24.svg">
+        <img @click="questionNum = 0" style="height: 32px; margin-left: -14px" src="../img/replay_24dp_3F3F3F_FILL0_wght400_GRAD0_opsz24.svg">
+      </div>
+   </div>
 
   <div class="width">
-    
-    <h1  v-if="questionNum === 0" class="title">SHOE FINDER</h1>
+    <div v-if="questionNum <= 4">
+      <h1  v-if="questionNum === 0" class="title">SHOE FINDER</h1>
 
-    <!-- Filters -->
-    <div v-if="!selectedShoe" :style="questionNum == 3 ? 'bottom: -11.4%' : 'bottom: 0'" class="content">
+      <!-- Filters -->
+      <div :style="questionNum == 3 ? 'bottom: -11.4%' : 'bottom: 0'" class="content">
 
+        <p :style="questionNum == 4 ? 'margin-bottom: 12px' : ''"  class="question">{{ question[questionNum] }}</p>
 
-      <p :style="questionNum == 4 ? 'margin-bottom: 12px' : ''"  class="question">{{ question[questionNum] }}</p>
+        <div class="pos-btn" v-if="questionNum === 0">
+          <button class="btn-gradient" @click="questionNum++">START</button>
+        </div>
 
-      <div class="pos-btn" v-if="questionNum === 0">
-        <button class="btn-gradient" @click="questionNum++">START</button>
-      </div>
+        <!-- Conditional rendering of gender options -->
+        <div class="pos-btn" v-if="questionNum === 1">
+          <button
+            v-for="(option, index) in genderOptions"
+            :key="index"
+            class="btn-option"
+            @click="setFilter('gender', option)"
+          >
+            {{ option }}
+          </button>
+        </div>
 
-      <!-- Conditional rendering of gender options -->
-      <div class="pos-btn" v-if="questionNum === 1">
-        <button
-          v-for="(option, index) in genderOptions"
-          :key="index"
-          class="btn-option"
-          @click="setFilter('gender', option)"
-        >
-          {{ option }}
-        </button>
-      </div>
+        <!-- Conditional rendering of  focus options -->
+        <div v-if="questionNum === 2">
+          <button
+            v-for="(option, index) in mainFocusOptions"
+            :key="index"
+            class="btn-option"
+            @click="setFilter('main_focus', option)"
+          >
+            {{ option }}
+          </button>
+        </div>
 
-      <!-- Conditional rendering of main focus options -->
-      <div v-if="questionNum === 2">
-        <button
-          v-for="(option, index) in mainFocusOptions"
-          :key="index"
-          class="btn-option"
-          @click="setFilter('main_focus', option)"
-        >
-          {{ option }}
-        </button>
-      </div>
+        <!-- Conditional rendering of eco-friendly options -->
+        <div v-if="questionNum === 3">
+          <button
+            v-for="(option, index) in footTypeOptions"
+            :key="index"
+            class="btn-option"
+            @click="setFilter('foot_type', option)"
+          >
+            {{ option }}
+          </button>
+        </div>
 
-      <!-- Conditional rendering of eco-friendly options -->
-      <div v-if="questionNum === 3">
-        <button
-          v-for="(option, index) in footTypeOptions"
-          :key="index"
-          class="btn-option"
-          @click="setFilter('foot_type', option)"
-        >
-          {{ option }}
-        </button>
-      </div>
+        <!-- Conditional rendering of mileage options -->
+        <div v-if="questionNum === 4">
+        <!-- Slider -->
+          <div class="slider-container">
+            <div style="position: absolute; width: 77%; left: 50%; transform: translateX(-50%);">
+              <div 
+                v-if="plannedMaxDistance" 
+                class="value-box" 
+                :style="{ left: `${sliderPosition}%`, transform: 'translateX(-50%)' }"
+              >
+                {{ plannedMaxDistance }}
+              </div>
+            </div>
 
-      <!-- Conditional rendering of mileage options -->
-      <div v-if="questionNum === 4">
-       <!-- Slider -->
-        <div class="slider-container">
-          <div style="position: absolute; width: 77%; left: 50%; transform: translateX(-50%);">
-            <div 
-              v-if="plannedMaxDistance" 
-              class="value-box" 
-              :style="{ left: `${sliderPosition}%`, transform: 'translateX(-50%)' }"
+            <input 
+              class="slider" 
+              v-model="plannedMaxDistance" 
+              min="0" 
+              max="50" 
+              step="5" 
+              type="range"
+              @input="updateSliderPosition"
+              :style="sliderBackgroundStyle"
             >
-              {{ plannedMaxDistance }}
+            <div class="planned-distances">
+              <p class="dist" style="left: 0">0</p>
+              <p class="dist" style="left: 20%">10</p>
+              <p class="dist" style="left: 40%">20</p>
+              <p class="dist" style="left: 60%">30</p>
+              <p class="dist" style="left: 80%">40</p>
+              <p class="dist" style="left: 100%">50</p>
             </div>
           </div>
 
-          <input 
-            class="slider" 
-            v-model="plannedMaxDistance" 
-            min="0" 
-            max="50" 
-            step="5" 
-            type="range"
-            @input="updateSliderPosition"
-            :style="sliderBackgroundStyle"
+          <button
+            class="btn-gradient"
+            @click="setFilter('mileage', plannedMaxDistance)"
+            :disabled="!plannedMaxDistance"
+            style="z-index: 10;"
           >
-          <div class="planned-distances">
-            <p class="dist" style="left: 0">0</p>
-            <p class="dist" style="left: 20%">10</p>
-            <p class="dist" style="left: 40%">20</p>
-            <p class="dist" style="left: 60%">30</p>
-            <p class="dist" style="left: 80%">40</p>
-            <p class="dist" style="left: 100%">50</p>
+            CONTINUE
+          </button>
+        </div>
+      </div>
+    </div>
+      
+      <div v-else class="main-content"> 
+        <h1 class="title-end">SHOE MATCH</h1>   
+      <!-- Shoe Details -->
+      <h1 style="margin-top: 6px; font-size: 18px; width: 80%;"  v-if="selectedShoe">{{ selectedShoe.shoe_brand }} {{ selectedShoe.model_name }}</h1>
+      <div v-if="selectedShoe" class="shoe-details col">
+        <ul class="tags">
+          <!-- Eco Friendly -->
+          <li style="white-space: nowrap; display: flex; flex-direction: row; " v-if="selectedShoe.eco_friendly" class="tag">
+            Eco-Friendly
+            <img 
+              style="width: 100%; margin-left: 6px; height: 16px;" 
+              src="../img/eco_24dp_3F3F3F_FILL0_wght400_GRAD0_opsz24.svg" 
+              alt="Eco-Friendly Icon"
+            />
+          </li>
+
+          <!-- Main Focus -->
+          <li class="tag">Main focus: {{ selectedShoe.main_focus }}</li>
+          <!-- Mileage -->
+          <li class="tag">Mileage: {{ selectedShoe.mileage }}</li>
+          <!-- Foot Type -->
+          <li v-if="selectedShoe.foot_type" class="tag">Foot Type: {{ selectedShoe.foot_type }}</li>
+          <!-- Price -->
+          <li v-if="selectedShoe.price" class="tag">Price: €{{ selectedShoe.price }}</li>
+        </ul>
+  
+        <img style="width: 260px; height: 100%" src="../img/shoe-big.png" alt="Shoe Image">
+        <div class="ratings row">
+
+          <div class="col spacing-ratings">
+            <p class="center light">Cushioning</p> 
+            <div class="container-rating">
+              <p style="z-index: 2" class="center">{{ selectedShoe.cushioning_rate }}</p>
+              <div :style="{ 
+                height: selectedShoe ? selectedShoe.cushioning_rate * 10 + '%' : 'auto', 
+                borderRadius: selectedShoe && selectedShoe.cushioning_rate === 10 ? '8px' : '',
+                background: selectedShoe && selectedShoe.cushioning_rate > 5 ? 'linear-gradient(to top, #6DBB84, #067631)' : 'linear-gradient(to top, #C9432F, #C3210F)'
+              }"
+              class="rating"></div>
+            </div>
+          </div>
+          <div class="col spacing-ratings">
+            <p class="center light">Durability</p> 
+            <div class="container-rating">
+              <p style="z-index: 2" class="center">{{ selectedShoe.durability_rate }}</p>
+              <div :style="{ 
+                height: selectedShoe ? selectedShoe.durability_rate * 10 + '%' : 'auto', 
+                borderRadius: selectedShoe && selectedShoe.durability_rate === 10 ? '8px' : '',
+                background: selectedShoe && selectedShoe.durability_rate > 5 ? 'linear-gradient(to top, #6DBB84, #067631)' : 'linear-gradient(to top, #C9432F, #C3210F)'
+              }"
+              class="rating"></div>
+            </div>
+          </div>
+          <div class="col spacing-ratings">
+            <p class="center light">Pace</p> 
+            <div class="container-rating">
+              <p style="z-index: 2" class="center">{{ selectedShoe.pace_rate }}</p>
+              <div :style="{ 
+                height: selectedShoe ? selectedShoe.pace_rate * 10 + '%' : 'auto', 
+                borderRadius: selectedShoe && selectedShoe.pace_rate === 10 ? '8px' : '',
+                background: selectedShoe && selectedShoe.pace_rate > 5 ? 'linear-gradient(to top, #6DBB84, #067631)' : 'linear-gradient(to top, #C9432F, #C3210F)'
+              }"
+              class="rating"></div>
+            </div>
           </div>
         </div>
-
-
-
-        <button
-          v-for="(option, index) in mileageOptions"
-          :key="index"
-          class="btn-gradient"
-          @click="setFilter('mileage', option)"
-        >
-          CONTINUE
-        </button>
       </div>
-      
-      <div v-if="questionNum > 4">
-        <div class="results-bg">
+
+        <!-- Similar Shoes Section -->
+      <h4 style="margin-top: 18px;" v-if="selectedShoe">Similar Shoes</h4>
+      <div v-if="selectedShoe" class="results-bg">
+        <ul class="results">
+          <li v-for="(shoe, index) in similarShoes" :key="index">
+            <div @click="shoeInformation(shoe)" class="row shoe">
+              <img src="../img/shoe.png" />
+              <div class="shoe-name text-s">{{ shoe.shoe_brand }} {{ shoe.model_name }}</div>
+              <div class="col">
+                <div class="row ratings-s text-s">
+                  <p>CUS</p>
+                  <p>DUR</p>
+                  <p>PAC</p>
+                </div>
+                <div style="margin-top: 8px;" class="row ratings-s text-b">
+                  <p>{{ shoe.cushioning_rate }}</p>
+                  <p>{{ shoe.durability_rate }}</p>
+                  <p>{{ shoe.pace_rate }}</p>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+ 
+
+      <!-- Search Results -->
+      <div v-if="!selectedShoe" class="results-bg">
         <ul v-if="filteredData.length > 0" class="results">
           <li v-for="(shoe, index) in filteredData" :key="index">
             <div @click="shoeInformation(shoe)" class="row shoe">
@@ -127,9 +227,14 @@
 
         <h4 v-else class="no-results">No results found...</h4>
       </div>
-      </div>
-    </div>
+
+          
+        
+      
+     </div>
+
   </div>
+
 </template>
 
 
@@ -140,6 +245,7 @@ import { ref, computed, onMounted } from "vue";
 export default {
   name: "ComparePage",
   setup() {
+  
     const questionNum = ref(0 );
     const question = ref([
       "Answer 4 quick questions to find the perfect running shoes for you!", 
@@ -161,7 +267,7 @@ export default {
       "MALE",
       "FEMALE",
     ]);
-    const mileageOptions = ref(["High distance coverage"]);
+
     const mainFocusOptions = ref([
       "DURABILITY",
       "SPEED",
@@ -183,13 +289,27 @@ export default {
     const selectedMainFocus = ref(null);
     const selectedFootType = ref(null);
 
+    const selectRandomShoe = () => {
+      const results = filteredData.value || []; // Default to an empty array
+      console.log("Filtered Results:", results); // Debug filtered results
+      if (results.length > 0) {
+        selectedShoe.value = results[Math.floor(Math.random() * results.length)];
+        console.log("Selected Shoe:", selectedShoe.value); // Debug selected shoe
+      } else {
+        console.warn("No shoes match the selected criteria.");
+        selectedShoe.value = null; // Or show a default message
+      }
+    };
+
+
+
     const setFilter = (filterType, option) => {
       questionNum.value += 1;
       if (filterType === "gender") {
         selectedGender.value = selectedGender.value === option ? null : option;
       }
       if (filterType === "mileage") {
-        selectedMileage.value = selectedMileage.value === option ? null : option;
+        selectedMileage.value = selectedMileage.value === plannedMaxDistance.value ? null : plannedMaxDistance.value;
       }
       if (filterType === "main_focus") {
         selectedMainFocus.value =
@@ -199,61 +319,129 @@ export default {
         selectedFootType.value =
           selectedFootType.value === option ? null : option;
       }
+
+      if (questionNum.value > 4) {
+        if (filteredData.value.length > 0) {
+          selectRandomShoe();
+        } else {
+          console.warn("No shoes match the selected criteria.");
+          selectedShoe.value = null; // Or show a default message
+        }
+      }
+
+
     };
 
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:5000/compare-shoes");
+        const response = await axios.get("http://127.0.0.1:5000/compare");
         data.value = response.data;
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
+  
+    const filteredDataWithoutMileage = computed(() => {
+  const query = searchQuery.value.toLowerCase().trim();
+  return data.value.filter((shoe) => {
+    const matchesSearch = `${shoe.shoe_brand} ${shoe.model_name}`
+      .toLowerCase()
+      .includes(query);
 
-    const filteredData = computed(() => {
-      const query = searchQuery.value.toLowerCase().trim();
-      return data.value.filter((shoe) => {
-        const matchesSearch = `${shoe.shoe_brand} ${shoe.model_name}`
-          .toLowerCase()
-          .includes(query);
-        
-          const matchesGender = 
-          !selectedGender.value || 
-          (selectedGender.value === "MALE" ? shoe.gender.includes("Men") || shoe.gender.includes("Unisex") : 
-          selectedGender.value === "FEMALE" ? shoe.gender.includes("Women")|| shoe.gender.includes("Unisex") : true);
+    const matchesGender =
+      !selectedGender.value ||
+      (selectedGender.value === "MALE"
+        ? shoe.gender.includes("Men") || shoe.gender.includes("Unisex")
+        : selectedGender.value === "FEMALE"
+        ? shoe.gender.includes("Women") || shoe.gender.includes("Unisex")
+        : true);
+
+    const matchesMainFocus =
+      !selectedMainFocus.value ||
+      shoe.main_focus.toLowerCase().includes(selectedMainFocus.value.toLowerCase());
+
+    const matchesFootType =
+      !selectedFootType.value ||
+      (Array.isArray(shoe.foot_type)
+        ? shoe.foot_type.some((type) =>
+            type.toLowerCase().includes(selectedFootType.value.toLowerCase())
+          )
+        : shoe.foot_type?.toLowerCase().includes(selectedFootType.value.toLowerCase()));
+
+    return matchesSearch && matchesGender && matchesMainFocus && matchesFootType;
+  });
+});
 
 
-        const matchesMileage =
-          !selectedMileage.value || shoe.mileage > 800;
+  const filteredData = computed(() => {
+  const query = searchQuery.value.toLowerCase().trim();
+  const results = data.value.filter((shoe) => {
+    const matchesSearch = `${shoe.shoe_brand} ${shoe.model_name}`
+      .toLowerCase()
+      .includes(query);
 
-         const matchesMainFocus =
-            !selectedMainFocus.value ||
-            shoe.main_focus.toLowerCase().includes(selectedMainFocus.value.toLowerCase()) ||
-            (selectedMainFocus.value === "High cushioning" && shoe.main_focus.toLowerCase().includes("cushion")) ||
-            (selectedMainFocus.value === "Speed" && 
-              (shoe.main_focus.toLowerCase().includes("sprint") || 
-              shoe.main_focus.toLowerCase().includes("race") || 
-              shoe.main_focus.toLowerCase().includes("speed"))) ||
-            (selectedMainFocus.value === "Stability" && shoe.main_focus.toLowerCase().includes("stability")) ||
-            (selectedMainFocus.value === "Daily Training" && shoe.main_focus.toLowerCase().includes("training")) ||
-            (selectedMainFocus.value === "Long Distance" && shoe.main_focus.toLowerCase().includes("distance"));
+    const matchesGender =
+      !selectedGender.value ||
+      (selectedGender.value === "MALE"
+        ? shoe.gender.includes("Men") || shoe.gender.includes("Unisex")
+        : selectedGender.value === "FEMALE"
+        ? shoe.gender.includes("Women") || shoe.gender.includes("Unisex")
+        : true);
+
+    const matchesMainFocus =
+      !selectedMainFocus.value ||
+      shoe.main_focus.toLowerCase().includes(selectedMainFocus.value.toLowerCase()) ||
+      (selectedMainFocus.value === "DURABILITY" &&
+        (shoe.main_focus.toLowerCase().includes("long distance") || shoe.main_focus.toLowerCase().includes("cushioned"))) ||
+      (selectedMainFocus.value === "SPEED" &&
+        (shoe.main_focus.toLowerCase().includes("sprint") || shoe.main_focus.toLowerCase().includes("race") || shoe.main_focus.toLowerCase().includes("speed"))) ||
+      (selectedMainFocus.value === "TRAIL RUNNING" &&
+        shoe.main_focus.toLowerCase().includes("trail")) ||
+      (selectedMainFocus.value === "ALL-ROUND" &&
+        (shoe.main_focus.toLowerCase().includes("daily training") ||
+          shoe.main_focus.toLowerCase().includes("neutral") ||
+          shoe.main_focus.toLowerCase().includes("stability")));
+
+    const matchesFootType =
+      !selectedFootType.value ||
+      (Array.isArray(shoe.foot_type)
+        ? shoe.foot_type.some((type) =>
+            type.toLowerCase().includes(selectedFootType.value.toLowerCase())
+          )
+        : shoe.foot_type?.toLowerCase().includes(selectedFootType.value.toLowerCase()));
+
+    const matchesMileage =
+      !plannedMaxDistance.value ||
+      (plannedMaxDistance.value <= 10 && shoe.mileage < 522 + 133.6) ||
+      (plannedMaxDistance.value > 10 && plannedMaxDistance.value <= 20 && shoe.mileage < 522 + 2 * 133.6) ||
+      (plannedMaxDistance.value > 20 && plannedMaxDistance.value <= 30 && shoe.mileage < 522 + 3 * 133.6) ||
+      (plannedMaxDistance.value > 30 && plannedMaxDistance.value <= 40 && shoe.mileage < 522 + 4 * 133.6) ||
+      (plannedMaxDistance.value > 40 && plannedMaxDistance.value <= 50 && shoe.mileage <= 522 + 5 * 133.6);
+
+    return matchesSearch && matchesGender && matchesMainFocus && matchesFootType && matchesMileage;
+  });
+
+  // Return the results if any match, else fall back
+  if (results.length > 0) {
+    return results;
+  } else {
+    // Fallback to data without mileage filter
+    return filteredDataWithoutMileage.value || [];
+  }
+});
 
 
-        const matchesFootType =
-          !selectedFootType.value || shoe.foot_type.includes(selectedFootType.value.toLowerCase());
 
-        return matchesSearch && matchesGender && matchesMileage && matchesMainFocus && matchesFootType;
-      });
-    });
+
 
     const updateSliderPosition = () => {
-  sliderPosition.value = (plannedMaxDistance.value / 50) * 100;
+      sliderPosition.value = (plannedMaxDistance.value / 50) * 100;
 
-  // Update slider background color based on the slider position
-  sliderBackgroundStyle.value = {
-    background: `linear-gradient(to right, #14DF61 ${sliderPosition.value}%, #D9D9D9 ${sliderPosition.value}%)`
-  };
-};
+      // Update slider background color based on the slider position
+      sliderBackgroundStyle.value = {
+        background: `linear-gradient(to right, #14DF61 ${sliderPosition.value}%, #D9D9D9 ${sliderPosition.value}%)`
+      };
+    };
 
 
     const calculateSimilarity = (shoe) => {
@@ -276,44 +464,36 @@ export default {
         .sort((a, b) => b.similarityScore - a.similarityScore);
     });
 
-    const mainContentStyle = computed(() =>
-      selectedShoe.value ? "height: 78%;" : "height: 52%;"
-    );
-
 
     onMounted(fetchData);
 
     return {
-  data,
-  question,
-  questionNum,
-  searchQuery,
-  filteredData,
-  selectedShoe,
-  genderOptions,
-  mileageOptions,
-  similarShoes,
-  mainFocusOptions,
-  footTypeOptions,
-  selectedGender,
-  selectedMileage,
-  sliderBackgroundStyle,
-  selectedMainFocus,
-  selectedFootType,
-  plannedMaxDistance,
-  sliderPosition,
-  updateSliderPosition,
-  setFilter,
-  shoeInformation: (shoe) => {
-    selectedShoe.value = shoe;
-    searchQuery.value = ""; // Clear the search query
-    console.log(shoe);
-  },
-  closeShoeInformation: () => (selectedShoe.value = null),
-  mainContentStyle,
-};
-
-  },
+      data,
+      question,
+      questionNum,
+      searchQuery,
+      filteredData,
+      selectedShoe,
+      genderOptions,
+      similarShoes,
+      mainFocusOptions,
+      footTypeOptions,
+      selectedGender,
+      selectedMileage,
+      sliderBackgroundStyle,
+      selectedMainFocus,
+      selectedFootType,
+      plannedMaxDistance,
+      sliderPosition,
+      updateSliderPosition,
+      setFilter,
+      shoeInformation: (shoe) => {
+        selectedShoe.value = shoe;
+        searchQuery.value = ""; // Clear the search query
+        console.log(shoe);
+      },
+    };
+    }
 };
 </script>
 
@@ -334,6 +514,13 @@ h3{
   margin-top: 132%;
 }
 
+.title-end {
+  width: 60%;
+  text-align: left;
+  z-index: 12;
+  /* margin-top: 12%; */
+}
+
 .pos-back{
   width: 100%;
   text-align: center;
@@ -342,6 +529,16 @@ h3{
   z-index: 10;
   justify-content: center;
   align-content: center;
+}
+
+.pos-restart{
+  /* width: 90vw;  */
+  position: absolute;
+  top: 15%;
+  z-index: 10;
+  justify-content: left;
+  right: 3%;
+  /* align-content: center; */
 }
 
 .questionNum{
@@ -389,6 +586,13 @@ button{
   padding: 22px;
 }
 
+.btn-gradient:disabled {
+  background-color: #ccc; /* Light gray background */
+  cursor: not-allowed;    /* Show not-allowed cursor */
+  opacity: 0.3;           /* Slightly transparent */
+}
+
+
 .btn-option{
   background: #171717;
   border: solid #212121 3px;
@@ -421,11 +625,13 @@ button{
 }
 
 .main-content {
-  margin-top: 12px;
-  position: relative;
+  margin-top: 20.5%;
+  width: 90%;
+  position: fixed;
   display: flex;
   flex-direction: column;
   overflow-y: none; /* Zorgt dat scrollen mogelijk is */
+  height: 84%;
 }
 .tags {
   width: 100%;
@@ -460,17 +666,6 @@ button{
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.close-btn {
-  position: absolute;
-  top: 6px;
-  right: 12px;
-  background: none;
-  border: none;
-  color: #D6D6D6;
-  font-size: 16px;
-  font-family: 'Light', sans-serif;
 }
 
 .ratings {
@@ -679,7 +874,7 @@ input[type="range"]::-webkit-slider-runnable-track {
   width: 75%;
   position: relative;
   left: -2%;
-  top: 66%;
+  margin-top: 66px;
   /* transform: translateX(-50%); */
 }
 
