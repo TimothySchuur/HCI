@@ -30,6 +30,16 @@
 
     <!-- Filters -->
     <div v-if="!selectedShoe" class="filters">
+      <!-- Gender Filter -->
+      <button
+        v-for="(option, index) in genderOptions"
+        :key="index"
+        :class="{ active: selectedGender === option }"
+        @click="setFilter('gender', option)"
+      >
+        {{ option }}
+      </button>
+
       <button
         v-for="(option, index) in mileageOptions"
         :key="index"
@@ -51,10 +61,11 @@
       <button
         v-for="(option, index) in ecoFriendlyOptions"
         :key="index"
+        style="display: flex; flex-direction: row; "
         :class="{ active: selectedEcoFriendly === option }"
         @click="setFilter('eco_friendly', option)"
       >
-        {{ option }}
+        {{ option }} <img style="width: 100%; ; margin-left: 6px; height: 16px" src="../img/eco_24dp_3F3F3F_FILL0_wght400_GRAD0_opsz24.svg">
       </button>
     </div>
 
@@ -65,7 +76,15 @@
       <div v-if="selectedShoe" class="shoe-details col">
         <ul class="tags">
           <!-- Eco Friendly -->
-          <li v-if="selectedShoe.eco_friendly" class="tag">Eco-Friendly</li>
+          <li style="white-space: nowrap; display: flex; flex-direction: row; " v-if="selectedShoe.eco_friendly" class="tag">
+            Eco-Friendly
+            <img 
+              style="width: 100%; margin-left: 6px; height: 16px;" 
+              src="../img/eco_24dp_3F3F3F_FILL0_wght400_GRAD0_opsz24.svg" 
+              alt="Eco-Friendly Icon"
+            />
+          </li>
+
           <!-- Main Focus -->
           <li class="tag">Main focus: {{ selectedShoe.main_focus }}</li>
           <!-- Mileage -->
@@ -185,10 +204,14 @@ export default {
     const searchQuery = ref("");
     const selectedShoe = ref(null);
 
-    const mileageOptions = ref(["High mileage"]);
+    const genderOptions = ref([
+      "Male",
+      "Female",
+    ]);
+    const mileageOptions = ref(["High distance coverage"]);
     const mainFocusOptions = ref([
       "Trail Running",
-      "Cushioned",
+      "High cushioning",
       "Speed",
       "Stability",
       "Daily Training",
@@ -196,11 +219,15 @@ export default {
     ]);
     const ecoFriendlyOptions = ref(["Eco friendly"]);
 
+    const selectedGender = ref(null);
     const selectedMileage = ref(null);
     const selectedMainFocus = ref(null);
     const selectedEcoFriendly = ref(null);
 
     const setFilter = (filterType, option) => {
+      if (filterType === "gender") {
+        selectedGender.value = selectedGender.value === option ? null : option;
+      }
       if (filterType === "mileage") {
         selectedMileage.value = selectedMileage.value === option ? null : option;
       }
@@ -216,7 +243,7 @@ export default {
 
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:5000/compare-shoes");
+        const response = await axios.get("http://127.0.0.1:5000/compare");
         data.value = response.data;
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -225,22 +252,39 @@ export default {
 
     const filteredData = computed(() => {
       const query = searchQuery.value.toLowerCase().trim();
-      return data.value.filter((shoe) => {
-        const matchesSearch = `${shoe.shoe_brand} ${shoe.model_name}`
-          .toLowerCase()
-          .includes(query);
+  
+    return data.value.filter((shoe) => {
+      const matchesSearch = `${shoe.shoe_brand} ${shoe.model_name}`
+        .toLowerCase()
+        .includes(query);
+          
+          const matchesGender = 
+          !selectedGender.value || 
+          (selectedGender.value === "Male" ? shoe.gender.includes("Men") || shoe.gender.includes("Unisex") : 
+          selectedGender.value === "Female" ? shoe.gender.includes("Women")|| shoe.gender.includes("Unisex") : true);
+
 
         const matchesMileage =
           !selectedMileage.value || shoe.mileage > 800;
 
-        const matchesMainFocus =
-          !selectedMainFocus.value ||
-          shoe.main_focus.includes(selectedMainFocus.value);
+          const matchesMainFocus =
+            !selectedMainFocus.value ||
+            shoe.main_focus.toLowerCase().includes(selectedMainFocus.value.toLowerCase()) ||
+            (selectedMainFocus.value === "High cushioning" && shoe.main_focus.toLowerCase().includes("cushion")) ||
+            (selectedMainFocus.value === "Speed" && 
+              (shoe.main_focus.toLowerCase().includes("sprint") || 
+              shoe.main_focus.toLowerCase().includes("race") || 
+              shoe.main_focus.toLowerCase().includes("speed"))) ||
+            (selectedMainFocus.value === "Stability" && shoe.main_focus.toLowerCase().includes("stability")) ||
+            (selectedMainFocus.value === "Daily Training" && shoe.main_focus.toLowerCase().includes("training")) ||
+            (selectedMainFocus.value === "Long Distance" && shoe.main_focus.toLowerCase().includes("distance"));
+
+
 
         const matchesEcoFriendly =
           !selectedEcoFriendly.value || shoe.eco_friendly === true;
 
-        return matchesSearch && matchesMileage && matchesMainFocus && matchesEcoFriendly;
+        return matchesSearch && matchesGender && matchesMileage && matchesMainFocus && matchesEcoFriendly;
       });
     });
 
@@ -265,7 +309,7 @@ export default {
     });
 
     const mainContentStyle = computed(() =>
-      selectedShoe.value ? "height: 78%;" : "height: 56%;"
+      selectedShoe.value ? "height: 78%;" : "height: 52%;"
     );
 
     // Watcher to reset selectedShoe and filters when searchQuery changes
@@ -287,10 +331,12 @@ export default {
   searchQuery,
   filteredData,
   selectedShoe,
+  genderOptions,
   mileageOptions,
   similarShoes,
   mainFocusOptions,
   ecoFriendlyOptions,
+  selectedGender,
   selectedMileage,
   selectedMainFocus,
   selectedEcoFriendly,
@@ -321,7 +367,7 @@ h3{
 .title {
   width: 60%;
   text-align: left;
-  margin-top: 80px;
+  margin-top: 22.8%;
 }
 
 .search-container {
@@ -531,6 +577,7 @@ p {
   border-radius: 8px;
   font-size: 13px;
   font-family: 'Light', sans-serif;
+  white-space: nowrap;
 }
 
 .filters button.active {

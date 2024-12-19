@@ -1,111 +1,140 @@
-id,shoe_brand,model_name,price,mileage,main_focus,eco_friendly,foot_type,cushioning_rate,durability_rate,pace_rate
-1,Nike,Air Zoom Pegasus 41,107.03,791,Trail Running,True,Extra Cushioning,9,10,5
-2,Nike,ZoomX Vaporfly Next%,148.96,560,Cushioned,False,High Arches,10,7,5
-3,Nike,React Infinity Run Flyknit,141.41,1080,Sprinting,False,Narrow Feet,5,10,9
-4,Nike,Zoom Fly 4,135.3,532,Long Distance,True,Small Feet,4,7,5
-5,Nike,Free RN 5.0,108.23,859,Neutral,False,Extra Cushioning,8,10,6
-6,Nike,Wildhorse 7,148.58,894,Stability,False,Wide Feet,5,10,4
-7,Nike,Terra Kiger 8,189.71,1169,Sprinting,True,Small Feet,5,10,7
-8,Nike,Air Zoom Alphafly,107.0,858,Race,True,Narrow Feet,4,9,4
-9,Nike,React Miler 3,118.25,878,Stability,True,High Arches,6,7,5
-10,Nike,Structure 24,117.8,1156,Trail Running,True,Narrow Feet,7,8,4
-11,Adidas,Ultraboost 22,130.25,916,Cushioned,True,High Arches,10,8,6
-12,Adidas,Adizero Adios Pro 3,194.08,821,Speed Work,False,Neutral Feet,7,7,5
-13,Adidas,Samba,166.02,543,Stability,False,Extra Cushioning,7,4,4
-14,Adidas,Solarboost 4,139.57,522,Sprinting,True,Narrow Feet,4,5,10
-15,Adidas,Terrex Agravic,141.41,595,Trail Running,False,High Arches,7,10,5
-16,Adidas,Supernova+,175.58,816,Stability,False,Overpronation,6,8,5
-17,Adidas,SL20.3,184.89,1173,Speed Work,False,Small Feet,5,10,5
-18,Adidas,Solarglide 5,114.39,767,Daily Training,True,Overpronation,5,6,5
-19,Adidas,Pulseboost HD,148.1,943,Sprinting,True,Neutral Feet,6,10,9
-20,Adidas,Pureboost,170.41,1190,Stability,False,High Arches,7,7,4
-21,Asics,Gel-Kayano 31,108.24,1128,Stability,True,High Arches,6,8,7
-22,Asics,Gel-Nimbus 25,107.75,863,Cushioned,False,Neutral Feet,7,10,6
-23,Asics,Metarun,179.9,1017,Trail Running,True,Overpronation,6,10,7
-24,Asics,GT-2000 10,192.22,999,Cushioned,False,Small Feet,7,10,4
-25,Asics,Gel-Cumulus 24,117.44,1113,Stability,True,High Arches,7,7,5
-26,Asics,Novablast 3,177.4,1037,Sprinting,False,Extra Cushioning,8,7,7
-27,Asics,Dynablast 2,100.0,1133,Daily Training,False,Narrow Feet,7,7,6
-28,Asics,GEL-Venture 8,166.46,681,Trail Running,True,Wide Feet,6,7,7
-29,Asics,GEL-Excite 9,121.38,1189,Cushioned,False,High Arches,7,7,6
-30,Asics,GEL-Pulse 13,184.69,723,Neutral,True,Overpronation,7,5,7
-31,Brooks,Ghost 16,198.32,1164,Long Distance,True,Narrow Feet,7,9,7
-32,Brooks,Adrenaline GTS 23,143.38,592,Sprinting,True,Wide Feet,4,4,9
-33,Brooks,Levitate 6,114.59,652,Neutral,True,Wide Feet,5,6,4
-34,Brooks,Hyperion Tempo,108.04,671,Cushioned,True,Overpronation,9,4,4
-35,Brooks,Launch 10,130.31,842,Race,False,Small Feet,6,8,6
-36,Brooks,Revel 6,166.6,930,Race,True,Neutral Feet,6,7,6
-37,Brooks,Glycerin 20,144.82,1170,Long Distance,True,Overpronation,7,8,6
-38,Brooks,Cascadia 16,126.91,778,Sprinting,True,Small Feet,7,6,8
-39,Brooks,Catamount,177.18,703,Long Distance,True,Small Feet,4,8,5
-40,Brooks,Divide 3,178.22,971,Sprinting,True,Extra Cushioning,10,10,8
-41,Hoka,Clifton 9,169.47,591,Neutral,False,Extra Cushioning,9,4,6
-42,Hoka,Bondi 8,132.76,787,Race,False,Wide Feet,4,6,7
-43,Hoka,Arahi 6,105.26,946,Sprinting,True,Neutral Feet,7,8,10
-44,Hoka,Speedgoat 5,151.51,1108,Cushioned,False,Narrow Feet,9,10,7
-45,Hoka,Mach 5,102.34,1079,Sprinting,True,High Arches,7,10,8
-46,Hoka,Kawana,135.76,563,Daily Training,False,Neutral Feet,7,5,5
-47,Hoka,Rincon 3,129.11,878,Cushioned,False,High Arches,10,9,4
-48,Hoka,Torrent 2,178.63,655,Race,False,Wide Feet,6,7,7
-49,Hoka,Challenger ATR 6,195.11,548,Cushioned,False,Narrow Feet,10,6,4
-50,Hoka,Elevon 2,156.26,680,Speed Work,True,High Arches,5,7,4
-51,Saucony,Endorphin Speed 4,117.63,843,Long Distance,False,Extra Cushioning,10,10,4
-52,Saucony,Peregrine 12,111.09,1099,Stability,False,Small Feet,5,10,7
-53,Saucony,Kinvara 13,155.4,918,Cushioned,True,Neutral Feet,7,7,6
-54,Saucony,Triumph 20,193.33,1008,Trail Running,True,Extra Cushioning,10,9,7
-55,Saucony,Ride 15,180.13,1115,Speed Work,True,Extra Cushioning,10,9,6
-56,Saucony,Xodus Ultra,125.8,1137,Stability,True,Neutral Feet,6,10,5
-57,Saucony,Freedom 5,184.23,863,Trail Running,False,High Arches,4,10,6
-58,Saucony,Axon 2,123.53,925,Speed Work,True,Overpronation,7,8,4
-59,Saucony,Guide 15,107.62,858,Trail Running,True,Narrow Feet,7,9,7
-60,Saucony,Cohesion 14,147.57,1060,Long Distance,True,Extra Cushioning,8,8,5
-61,New Balance,Fresh Foam 1080v13,161.15,953,Neutral,True,Extra Cushioning,9,9,5
-62,New Balance,FuelCell Rebel v3,114.04,712,Speed Work,True,Narrow Feet,5,6,5
-63,New Balance,FuelCell Prism,149.06,651,Cushioned,False,Overpronation,9,6,6
-64,New Balance,Nitrel v4,159.85,1035,Stability,False,Small Feet,4,10,5
-65,New Balance,More Trail v3,168.2,739,Neutral,False,Small Feet,4,6,7
-66,New Balance,Hierro v7,108.0,654,Trail Running,True,Extra Cushioning,9,10,7
-67,New Balance,Fresh Foam Roav,161.56,996,Long Distance,True,Wide Feet,5,10,4
-68,New Balance,Fresh Foam Arishi,199.59,647,Long Distance,True,Overpronation,7,9,7
-69,New Balance,870v5,129.31,799,Sprinting,True,Overpronation,7,7,10
-70,New Balance,1500v6,159.61,936,Daily Training,False,Wide Feet,4,10,4
-71,Mizuno,Wave Rider 28,121.06,778,Race,False,Extra Cushioning,7,5,6
-72,Mizuno,Wave Inspire 18,109.2,514,Sprinting,True,Neutral Feet,5,6,10
-73,Mizuno,Wave Sky 5,166.31,868,Speed Work,True,Extra Cushioning,7,9,4
-74,Mizuno,Wave Horizon 6,192.6,1057,Daily Training,True,Small Feet,6,9,7
-75,Mizuno,Wave Ultima 13,198.64,1087,Stability,True,Extra Cushioning,8,10,7
-76,Mizuno,Wave Shadow 5,162.85,544,Long Distance,False,Wide Feet,6,7,7
-77,Mizuno,Wave Equate 5,110.51,967,Race,True,Neutral Feet,6,8,6
-78,Mizuno,Wave Skyrise 3,186.62,625,Sprinting,False,Small Feet,4,5,8
-79,Mizuno,Wave Prophecy X,192.05,1125,Speed Work,False,Extra Cushioning,10,9,5
-80,Mizuno,Wave Hayate 6,123.21,624,Neutral,False,Small Feet,6,5,6
-81,Salomon,Speedcross 6,110.64,844,Daily Training,False,Overpronation,4,10,6
-82,Salomon,Sense Ride 4,164.44,856,Cushioned,True,Small Feet,7,7,6
-83,Salomon,Wildcross,137.26,962,Daily Training,True,High Arches,6,10,4
-84,Salomon,XA Pro 3D,146.51,1188,Cushioned,True,Wide Feet,10,9,5
-85,Salomon,Ultra Glide,105.2,1124,Long Distance,True,High Arches,5,7,5
-86,Salomon,Alphacross 3,135.58,1133,Cushioned,True,Overpronation,7,7,7
-87,Salomon,Predict RA,153.17,839,Cushioned,True,Overpronation,7,7,5
-88,Salomon,Sense Pro 4,184.99,790,Cushioned,True,Neutral Feet,7,6,6
-89,Salomon,Cross Hike,127.84,525,Daily Training,False,Neutral Feet,5,5,5
-90,Salomon,Outpulse GTX,196.62,948,Neutral,True,Overpronation,4,10,5
-91,Puma,Deviate Nitro Elite,127.86,896,Trail Running,False,Extra Cushioning,7,9,6
-92,Puma,Velocity Nitro 2,173.71,1020,Cushioned,True,Narrow Feet,10,8,5
-93,Puma,Magnify Nitro,181.87,824,Cushioned,False,Neutral Feet,9,8,7
-94,Puma,Liberate Nitro,186.4,643,Speed Work,True,Overpronation,6,7,4
-95,Puma,ForeverRun Nitro,101.38,1180,Speed Work,False,High Arches,7,9,4
-96,Puma,Fast-R Nitro Elite,151.23,1070,Sprinting,True,Wide Feet,5,9,7
-97,Puma,UltraRide,116.1,989,Cushioned,True,Wide Feet,10,10,4
-98,Puma,Electrify Nitro,146.48,1123,Long Distance,False,Narrow Feet,7,7,7
-99,Puma,Nitro Deviate,134.62,733,Cushioned,False,Overpronation,8,6,7
-100,Puma,Fuse,194.83,924,Neutral,True,Extra Cushioning,7,9,7
-101,Reebok,Floatride Energy 4,196.55,929,Sprinting,True,Neutral Feet,6,10,7
-102,Reebok,Nano X2,187.6,873,Daily Training,False,Narrow Feet,7,9,5
-103,Reebok,Forever Floatride Grow,193.74,1087,Stability,True,Wide Feet,7,9,6
-104,Reebok,Zig Kinetica,184.0,1176,Speed Work,True,Neutral Feet,7,7,7
-105,Reebok,Flashfilm,163.58,1123,Trail Running,False,Wide Feet,7,9,7
-106,Reebok,Zig Dynamica,120.47,941,Daily Training,True,Overpronation,7,10,5
-107,Reebok,Hiit TR,118.59,869,Neutral,False,Narrow Feet,4,7,5
-108,Reebok,Liquifect 180,197.34,918,Cushioned,False,Wide Feet,10,8,5
-109,Reebok,Astroride 2,135.41,872,Long Distance,False,High Arches,5,7,7
-110,Reebok,Reebok Zig Elusion Energy,141.7,923,Stability,False,Wide Feet,7,9,4
+id,shoe_brand,model_name,price,mileage,main_focus,eco_friendly,foot_type,cushioning_rate,durability_rate,pace_rate,gender
+1,Nike,Air Zoom Pegasus 41,107.03,791,Trail Running,True,Neutral Feet,9,10,5,Unisex
+2,Nike,ZoomX Vaporfly Next%,148.96,560,Race,False,High Arches,10,7,9,Unisex
+3,Nike,React Infinity Run Flyknit,141.41,1080,Sprinting,False,Narrow Feet,5,10,10,Women
+4,Nike,Zoom Fly 4,135.3,532,Long Distance,True,Small Feet,4,7,5,Men
+5,Nike,Free RN 5.0,108.23,859,Neutral,False,Neutral Feet,8,10,6,Women
+6,Nike,Wildhorse 7,148.58,894,Stability,False,Wide Feet,5,10,4,Unisex
+7,Nike,Terra Kiger 8,189.71,1169,Sprinting,True,Small Feet,5,10,10,Men
+8,Nike,Air Zoom Alphafly,107.0,858,Race,True,Narrow Feet,4,9,9,Women
+9,Nike,React Miler 3,118.25,878,Stability,True,High Arches,6,7,5,Men
+10,Nike,Structure 24,117.8,1156,Trail Running,True,Narrow Feet,7,10,4,Unisex
+11,Adidas,Ultraboost 22,130.25,916,Cushioned,True,High Arches,10,8,6,Women
+12,Adidas,Adizero Adios Pro 3,194.08,821,Speed Work,False,Neutral Feet,7,7,10,Men
+13,Adidas,Samba,166.02,543,Stability,False,Neutral Feet,7,4,4,Unisex
+14,Adidas,Solarboost 4,139.57,522,Sprinting,True,Narrow Feet,4,5,10,Men
+15,Adidas,Terrex Agravic,141.41,595,Trail Running,False,High Arches,7,10,5,Women
+16,Adidas,Supernova+,175.58,816,Stability,False,Flat Feet,6,8,5,Men
+17,Adidas,SL20.3,184.89,1173,Speed Work,False,Small Feet,5,10,10,Women
+18,Adidas,Solarglide 5,114.39,767,Daily Training,True,Flat Feet,5,6,5,Unisex
+19,Adidas,Pulseboost HD,148.1,943,Sprinting,True,Neutral Feet,6,10,10,Men
+20,Adidas,Pureboost,170.41,1190,Stability,False,High Arches,7,10,4,Women
+21,Asics,Gel-Kayano 31,108.24,1128,Stability,True,High Arches,6,9,7,Unisex
+22,Asics,Gel-Nimbus 25,107.75,863,Cushioned,False,Neutral Feet,7,10,6,Women
+23,Asics,Metarun,179.9,1017,Trail Running,True,Flat Feet,6,10,7,Men
+24,Asics,GT-2000 10,192.22,999,Cushioned,False,Small Feet,7,10,4,Unisex
+25,Asics,Gel-Cumulus 24,117.44,1113,Stability,True,High Arches,7,9,5,Men
+26,Asics,Novablast 3,177.4,1037,Sprinting,False,Neutral Feet,8,7,10,Women
+27,Asics,Dynablast 2,100.0,1133,Daily Training,False,Narrow Feet,7,8,6,Men
+28,Asics,GEL-Venture 8,166.46,681,Trail Running,True,Wide Feet,6,7,7,Unisex
+29,Asics,GEL-Excite 9,121.38,1189,Cushioned,False,High Arches,9,7,6,Women
+30,Asics,GEL-Pulse 13,184.69,723,Neutral,True,Flat Feet,7,5,7,Men
+31,Brooks,Ghost 16,198.32,1164,Long Distance,True,Narrow Feet,7,9,7,Unisex
+32,Brooks,Adrenaline GTS 23,143.38,592,Sprinting,True,Wide Feet,4,4,9,Unisex
+33,Brooks,Levitate 6,114.59,652,Neutral,True,Wide Feet,5,6,4,Unisex
+34,Brooks,Hyperion Tempo,108.04,671,Cushioned,True,Flat Feet,9,4,4,Unisex
+35,Brooks,Launch 10,130.31,842,Race,False,Small Feet,6,8,8,Men
+36,Brooks,Revel 6,166.6,930,Race,True,Neutral Feet,6,7,9,Unisex
+37,Brooks,Glycerin 20,144.82,1170,Long Distance,True,Flat Feet,7,8,6,Women
+38,Brooks,Cascadia 16,126.91,778,Sprinting,True,Small Feet,7,6,8,Men
+39,Brooks,Catamount,177.18,703,Long Distance,True,Small Feet,4,8,5,Unisex
+40,Brooks,Divide 3,178.22,971,Sprinting,True,Neutral Feet,10,10,8,Men
+41,Hoka,Clifton 9,169.47,591,Neutral,False,Neutral Feet,9,4,6,Unisex
+42,Hoka,Bondi 8,132.76,787,Race,False,Wide Feet,4,6,7,Women
+43,Hoka,Arahi 6,105.26,946,Sprinting,True,Neutral Feet,7,8,9,Unisex
+44,Hoka,Speedgoat 5,151.51,1108,Cushioned,False,Narrow Feet,9,10,7,Unisex
+45,Hoka,Mach 5,102.34,1079,Sprinting,True,High Arches,7,10,8,Unisex
+46,Hoka,Kawana,135.76,563,Daily Training,False,Neutral Feet,7,5,5,Men
+47,Hoka,Rincon 3,129.11,878,Cushioned,False,High Arches,10,9,4,Women
+48,Hoka,Torrent 2,178.63,655,Race,False,Wide Feet,6,7,7,Unisex
+49,Hoka,Challenger ATR 6,195.11,548,Cushioned,False,Narrow Feet,10,6,4,Unisex
+50,Hoka,Elevon 2,156.26,680,Speed Work,True,High Arches,5,7,7,Men
+51,Saucony,Endorphin Speed 4,117.63,843,Long Distance,False,Neutral Feet,10,10,8,Women
+52,Saucony,Peregrine 12,111.09,1099,Stability,False,Small Feet,5,10,7,Unisex
+53,Saucony,Kinvara 13,155.4,918,Cushioned,True,Neutral Feet,7,7,6,Women
+54,Saucony,Triumph 20,193.33,1008,Trail Running,True,Neutral Feet,10,9,7,Men
+55,Saucony,Ride 15,180.13,1115,Speed Work,True,Neutral Feet,10,9,8,Unisex
+56,Saucony,Xodus Ultra,125.8,1137,Stability,True,Neutral Feet,6,10,5,Unisex
+57,Saucony,Freedom 5,184.23,863,Trail Running,False,High Arches,4,10,6,Men
+58,Saucony,Axon 2,123.53,925,Speed Work,True,Flat Feet,7,8,9,Unisex
+59,Saucony,Guide 15,107.62,858,Trail Running,True,Narrow Feet,7,9,7,Women
+60,Saucony,Cohesion 14,147.57,1060,Long Distance,True,Neutral Feet,8,8,5,Unisex
+61,New Balance,Fresh Foam 1080v13,161.15,953,Neutral,True,Neutral Feet,9,9,5,Women
+62,New Balance,FuelCell Rebel v3,114.04,712,Speed Work,True,Narrow Feet,5,6,8,Unisex
+63,New Balance,FuelCell Prism,149.06,651,Cushioned,False,Flat Feet,9,6,6,Unisex
+64,New Balance,Nitrel v4,159.85,1035,Stability,False,Small Feet,4,10,5,Men
+65,New Balance,More Trail v3,168.2,739,Neutral,False,Small Feet,4,6,7,Women
+66,New Balance,Hierro v7,108.0,654,Trail Running,True,Neutral Feet,9,10,7,Men
+67,New Balance,Fresh Foam Roav,161.56,996,Long Distance,True,Wide Feet,5,10,4,Women
+68,New Balance,Fresh Foam Arishi,199.59,647,Long Distance,True,Flat Feet,7,9,7,Unisex
+69,New Balance,870v5,129.31,799,Sprinting,True,Flat Feet,7,7,10,Men
+70,New Balance,1500v6,159.61,936,Daily Training,False,Wide Feet,4,10,4,Women
+71,Mizuno,Wave Rider 28,121.06,778,Race,False,Neutral Feet,7,5,9,Men
+72,Mizuno,Wave Inspire 18,109.2,514,Sprinting,True,Neutral Feet,5,6,10,Unisex
+73,Mizuno,Wave Sky 5,166.31,868,Speed Work,True,Neutral Feet,7,9,9,Unisex
+74,Mizuno,Wave Horizon 6,192.6,1057,Daily Training,True,Small Feet,6,9,7,Women
+75,Mizuno,Wave Ultima 13,198.64,1087,Stability,True,Neutral Feet,8,10,7,Unisex
+76,Mizuno,Wave Shadow 5,162.85,544,Long Distance,False,Wide Feet,6,7,7,Men
+77,Mizuno,Wave Equate 5,110.51,967,Race,True,Neutral Feet,6,8,8,Unisex
+78,Mizuno,Wave Skyrise 3,186.62,625,Sprinting,False,Small Feet,4,5,8,Women
+79,Mizuno,Wave Prophecy X,192.05,1125,Speed Work,False,Neutral Feet,10,9,8,Men
+80,Mizuno,Wave Hayate 6,123.21,624,Neutral,False,Small Feet,6,5,6,Unisex
+81,Salomon,Speedcross 6,110.64,844,Daily Training,False,Flat Feet,4,10,6,Men
+82,Salomon,Sense Ride 4,164.44,856,Cushioned,True,Small Feet,7,7,6,Women
+83,Salomon,Wildcross,137.26,962,Daily Training,True,High Arches,6,10,4,Unisex
+84,Salomon,XA Pro 3D,146.51,1188,Cushioned,True,Wide Feet,10,9,5,Unisex
+85,Salomon,Ultra Glide,105.2,1124,Long Distance,True,High Arches,5,7,5,Women
+86,Salomon,Alphacross 3,135.58,1133,Cushioned,True,Flat Feet,7,7,7,Unisex
+87,Salomon,Predict RA,153.17,839,Cushioned,True,Flat Feet,7,7,5,Unisex
+88,Salomon,Sense Pro 4,184.99,790,Cushioned,True,Neutral Feet,7,6,6,Women
+89,Salomon,Cross Hike,127.84,525,Daily Training,False,Neutral Feet,5,5,5,Unisex
+90,Salomon,Outpulse GTX,196.62,948,Neutral,True,Flat Feet,4,10,5,Men
+91,Puma,Deviate Nitro Elite,127.86,896,Trail Running,True,High Arches,9,10,6,Men
+92,Puma,Velopower,191.28,1070,Sprinting,True,Narrow Feet,8,6,8,Unisex
+93,Puma,NITRO,156.21,977,Race,True,Neutral Feet,8,7,7,Women
+94,Puma,Velocity Nitro 2,116.45,1135,Long Distance,True,Neutral Feet,7,10,5,Men
+95,Puma,Deviate Nitro,140.93,985,Speed Work,True,Flat Feet,10,8,9,Unisex
+96,Puma,Fusion Nitro,175.3,1026,Speed Work,False,Neutral Feet,7,9,7,Unisex
+97,Puma,Runshield,179.88,723,Neutral,True,Flat Feet,6,8,4,Men
+98,Puma,Velocity Nitro,150.87,679,Cushioned,False,Wide Feet,7,6,7,Women
+99,Puma,Velocity Nitro 2,138.99,1035,Speed Work,True,Wide Feet,9,6,8,Unisex
+100,Puma,Deviate Nitro Elite,160.16,755,Long Distance,True,High Arches,10,8,7,Wome
+102,Asics,Gel-Nimbus 25,145.32,1123,Long Distance,True,Flat Feet,7,9,5,Men
+103,Asics,Gel-Cumulus 25,121.89,762,Neutral,True,Wide Feet,6,8,7,Unisex
+104,Asics,GT-2000 11,137.22,653,Speed Work,True,Neutral Feet,7,7,8,Men
+105,Asics,Novablast 3,123.18,801,Long Distance,True,Narrow Feet,8,7,7,Unisex
+106,Asics,Gel-Contend 9,104.42,905,Neutral,False,Neutral Feet,5,8,6,Women
+107,Asics,FujiTrabuco 9,178.48,1120,Trail Running,True,High Arches,9,7,6,Men
+108,Asics,Glideride 3,150.71,973,Speed Work,True,Flat Feet,6,9,10,Unisex
+109,Asics,MetaSpeed Sky+,181.64,927,Sprinting,True,Wide Feet,10,6,10,Women
+110,Asics,Sonoma 5,161.94,1167,Trail Running,True,Narrow Feet,6,9,7,Unisex
+111,Under Armour,Flow Velociti Wind,154.48,1057,Sprinting,True,High Arches,9,7,9,Unisex
+112,Under Armour,Charged Bandit 7,128.76,914,Neutral,True,Neutral Feet,7,8,6,Men
+113,Under Armour,Hover Phantom 2,163.52,996,Long Distance,True,Wide Feet,6,9,7,Women
+114,Under Armour,Velocity 2,177.91,1047,Neutral,True,Neutral Feet,7,7,5,Unisex
+115,Under Armour,TriBase Reign 5,115.85,1078,Sprinting,True,Narrow Feet,6,8,7,Unisex
+116,Under Armour,Strive 4,145.61,1101,Neutral,True,High Arches,8,8,6,Women
+117,Under Armour,Micro G,169.89,812,Stability,False,Wide Feet,5,7,8,Men
+118,Under Armour,Speedform,137.76,1080,Speed Work,True,Neutral Feet,7,8,9,Unisex
+119,Under Armour,Flow Trail,132.91,993,Trail Running,True,Neutral Feet,7,6,7,Women
+120,Under Armour,ClutchFit Drive,148.63,923,Sprinting,False,Narrow Feet,9,7,9,Unisex
+121,Altra,Escalante 3,116.48,835,Speed Work,True,Wide Feet,6,9,8,Unisex
+122,Altra,Olympus 5,153.99,1092,Trail Running,True,High Arches,10,8,7,Men
+123,Altra,The Lone Peak 7,122.83,1051,Neutral,True,Neutral Feet,7,7,6,Women
+124,Altra,Alpine,169.32,1167,Trail Running,True,Narrow Feet,9,10,7,Unisex
+125,Altra,Paradigm 6,126.94,900,Stability,True,Flat Feet,8,9,5,Women
+126,Altra,Superior 5,174.46,893,Neutral,True,Wide Feet,6,8,6,Men
+127,Altra,Intuition 6,187.29,850,Speed Work,True,Neutral Feet,7,6,7,Unisex
+128,Altra,Provision 6,135.92,1128,Stability,True,Neutral Feet,7,9,6,Men
+129,Altra,Mont Blanc 2,196.85,1003,Trail Running,True,High Arches,9,9,5,Unisex
+130,Altra,Raven 3,168.96,1102,Cushioned,True,Small Feet,8,7,7,Women
+131,Columbia,FluidFlex 3,178.33,1009,Stability,True,Narrow Feet,7,8,5,Men
+132,Columbia,Shasta Peak 3,155.37,1080,Neutral,True,Neutral Feet,8,9,6,Unisex
+133,Columbia,Escape 4,129.65,1152,Trail Running,True,Flat Feet,6,7,7,Women
+134,Columbia,Tahoe Ridge,168.12,1031,Long Distance,True,Wide Feet,9,6,7,Unisex
+135,Columbia,Maxim 3,176.48,897,Cushioned,True,Narrow Feet,7,9,5,Men
+136,Columbia,Superlight,158.27,1054,Speed Work,True,High Arches,5,10,8,Unisex
+137,Columbia,OmniTrail,121.86,1045,Sprinting,True,Neutral Feet,6,8,8,Women
+138,Columbia,Pathfinder 2,189.45,1022,Trail Running,True,Wide Feet,8,9,6,Unisex
+139,Columbia,Endurance 4,135.38,999,Stability,True,Flat Feet,7,7,5,Men
+140,Columbia,TrailBlazer 3,167.26,1102,Trail Running,True,Neutral Feet,9,7,7,Women
