@@ -1,6 +1,7 @@
 <template>
   <div class="width">
-    <h1 class="title">SHOE COMPARISON</h1>
+    <div class="container">
+    <h1  v-if="!selectedShoe" class="title">SHOE COMPARISON</h1>
 
     <!-- Search Bar -->
     <div v-if="!selectedShoe" class="search-container">
@@ -139,7 +140,7 @@
 
         <!-- Similar Shoes Section -->
       <h4 style="margin-top: 18px;" v-if="selectedShoe">Similar Shoes</h4>
-      <div v-if="selectedShoe" class="results-bg">
+      <div v-if="selectedShoe" class="similar-results-bg">
         <ul class="results">
           <li v-for="(shoe, index) in similarShoes" :key="index">
             <div @click="shoeInformation(shoe)" class="row shoe">
@@ -191,6 +192,7 @@
       </div>
     </div>
   </div>
+</div>
 </template>
 
 <script>
@@ -359,9 +361,16 @@ h3{
   font-family: 'Headers', sans-serif;
   font-size: 16px;
 }
+
+.container{
+position: absolute;
+width: 100%;
+bottom: 32px;
+}
 .width {
   width: 90%;
   height: 100vh;
+  position: relative;
 }
 
 .title {
@@ -541,7 +550,17 @@ p {
   overflow-y: auto; /* Maak de lijst scrollbaar */
   padding: 0 10px;
   box-sizing: border-box;
-  max-height: calc(100vh - 150px); /* Zorgt dat er ruimte is */
+  max-height: 47vh; /* Zorgt dat er ruimte is */
+}
+
+.similar-results-bg {
+  margin-top: 12px;
+  background-color: #171717;
+  border-radius: 8px;
+  overflow-y: auto; /* Maak de lijst scrollbaar */
+  padding: 0 10px;
+  box-sizing: border-box;
+  max-height: 28vh; /* Zorgt dat er ruimte is */
 }
 
 .results {

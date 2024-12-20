@@ -22,7 +22,7 @@
         <button
           type="submit"
         >
-          Login
+          LOGIN
         </button>
         <p class="error">{{ loginError }}</p>
       </form>
@@ -59,7 +59,7 @@
           placeholder="Password"
           required
         />
-        <button type="submit">Sign Up</button>
+        <button type="submit">SIGN UP</button>
         <p class="error">{{ signupError }}</p>
       </form>
       <p>
@@ -99,50 +99,64 @@ export default {
 
     // Handle login
     const handleLogin = async () => {
-      if (!loginEmail.value || !loginPassword.value) return; // No action if fields are empty
-      try {
-        const response = await axios.post("http://localhost:5000/login", {
-          email: loginEmail.value,
-          password: loginPassword.value,
-        });
-        localStorage.setItem("authToken", response.data.token); // Save token
-        router.push("/connect-strava"); // Redirect after login
-      } catch (error) {
-        console.error("Login failed:", error.response?.data || error.message);
-        loginError.value =
-          error.response?.data?.error || "Login failed. Please try again.";
-      }
-    };
+  if (!loginEmail.value || !loginPassword.value) return; // No action if fields are empty
 
-    // Handle sign-up
+  try {
+    const response = await axios.post(`${process.env.VUE_APP_API_URL}/login`, {
+      email: loginEmail.value,
+      password: loginPassword.value,
+    });
+
+    localStorage.setItem("authToken", response.data.token); // Save token
+    router.push("/connect-strava"); // Redirect after login
+  } catch (error) {
+    console.error("Login failed:", error.response?.data || error.message);
+
+    // Handle errors based on response or message
+    if (error.response) {
+      loginError.value = error.response.data.error || "Login failed. Please try again.";
+    } else if (error.request) {
+      loginError.value = "No response from server. Please check the backend connection.";
+    } else {
+      loginError.value = `Error: ${error.message}`;
+    }
+  }
+};
+
+
+    //Handle register
     const handleSignUp = async () => {
-      if (!signupUsername.value || !signupEmail.value || !signupPassword.value) return; // No action if fields are empty
-      try {
-        const response = await fetch("http://localhost:5000/register", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            username: signupUsername.value,
-            email: signupEmail.value,
-            password: signupPassword.value,
-          }),
-        });
+  if (!signupUsername.value || !signupEmail.value || !signupPassword.value) {
+    return; // No action if fields are empty
+  }
+  
+  try {
+    const response = await axios.post(`${process.env.VUE_APP_API_URL}/register`, {
+      email: signupEmail.value,   // Correct usage of reactive values
+      username: signupUsername.value,
+      password: signupPassword.value
+    }, {
+      timeout: 10000  // Set timeout to 10 seconds
+    });
 
-        const data = await response.json();
+    console.log('Registration successful', response);
+  } catch (error) {
+    console.error("Sign-up failed:", error); // Log unexpected errors
 
-        if (response.ok) {
-          console.log("Response data:", data); // Debugging
-          alert(data.message || "Registration successful!"); // Alert on success
-          toggleForms(); // Switch to login form
-        } else {
-          console.error("Error response data:", data); // Log error details
-          signupError.value = data.error || "An unexpected error occurred.";
-        }
-      } catch (error) {
-        console.error("Sign-up failed:", error); // Log unexpected errors
-        signupError.value = "An error occurred. Please try again.";
-      }
-    };
+    if (error.response) {
+      // If there's a response from the server
+      signupError.value = error.response.data.error || "An error occurred. Please try again.";
+    } else if (error.request) {
+      // If the request was made but no response was received
+      signupError.value = "No response from server. Please check the backend connection.";
+    } else {
+      // If something went wrong in setting up the request
+      signupError.value = `Error: ${error.message}`;
+    }
+  }
+};
+
+
 
     return {
       isLoginVisible,
@@ -164,20 +178,26 @@ export default {
 <style scoped>
 .width {
   width: 90%;
-  height: 82vh;
+  height: 100vh;
   position: relative;
 }
 
 .title {
   width: 60%;
   text-align: left;
-  margin-top: 122%;
+  /* margin-top: 122%; */
 }
 
 form {
   display: flex;
   flex-direction: column;
   margin-top: 6px;
+}
+
+.form-container{
+  position: absolute;
+  width: 100%;
+  bottom: 180px;
 }
 
 button {
@@ -213,3 +233,5 @@ p {
   font-family: "Text", sans-serif;
 }
 </style>
+
+<!-- #fc4c02 -->

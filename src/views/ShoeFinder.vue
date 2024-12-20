@@ -13,11 +13,11 @@
    </div>
 
   <div class="width">
-    <div v-if="questionNum <= 4">
+    <div class="container" v-if="questionNum <= 4">
       <h1  v-if="questionNum === 0" class="title">SHOE FINDER</h1>
 
       <!-- Filters -->
-      <div :style="questionNum == 3 ? 'bottom: -11.4%' : 'bottom: 0'" class="content">
+      <div :style="questionNum == 3 ? 'bottom: -88px; position: absolute' : questionNum !== 0 ? 'bottom: -38px; position: absolute' : ''"class="content">
 
         <p :style="questionNum == 4 ? 'margin-bottom: 12px' : ''"  class="question">{{ question[questionNum] }}</p>
 
@@ -504,21 +504,25 @@ h3{
 }
 .width {
   width: 90%;
-  height: 82vh;
+  height: 100vh;
   position: relative;
+}
+
+.container{
+  position: absolute;
+  width: 100%;
+  bottom: 180px;
 }
 
 .title {
   width: 60%;
   text-align: left;
-  margin-top: 132%;
 }
 
 .title-end {
   width: 60%;
   text-align: left;
   z-index: 12;
-  /* margin-top: 12%; */
 }
 
 .pos-back{
@@ -552,7 +556,7 @@ h3{
   flex-direction: column;
   /* padding-top: 6px; */
   width: 100%;
-  position: absolute;
+  /* position: absolute; */
   /* bottom: 0; */
   bottom: -12%;
 }
@@ -600,13 +604,17 @@ button{
 
 
 .main-content {
-  margin-top: 20.5%;
+  /* margin-top: 20.5%; */
   width: 90%;
-  position: fixed;
+  /* position: fixed; */
   display: flex;
   flex-direction: column;
   overflow-y: none; /* Zorgt dat scrollen mogelijk is */
   height: 84%;
+  position: absolute;
+  width: 100%;
+  bottom: 12px;
+  /* bottom: 120px; */
 }
 .tags {
   width: 100%;

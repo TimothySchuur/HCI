@@ -12,7 +12,8 @@ import os
 
 # Flask app initialization
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app, resources={r"/*": {"origins": "http://localhost:8081"}})
+
 load_dotenv()
 
 @app.after_request
@@ -26,6 +27,7 @@ def after_request(response):
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://timothyschuur:password@localhost/hci_db'
 
 db = SQLAlchemy(app)
 jwt = JWTManager(app)
@@ -100,10 +102,16 @@ def register():
     # Hash the password and save the new user
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
     new_user = Users(username=username, email=email, password_hash=hashed_password)
-    db.session.add(new_user)
-    db.session.commit()
 
-    return jsonify({'message': 'User registered successfully'}), 201
+    try:
+        db.session.add(new_user)
+        db.session.commit()
+        return jsonify({'message': 'User registered successfully'}), 201
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error during registration: {e}")
+        return jsonify({'error': 'Internal server error, please try again later'}), 500
+
 
 # Login endpoint
 @app.route('/login', methods=['POST'])
@@ -323,7 +331,7 @@ def get_mileage_run():
     }), 200
 
 
-@app.route('/compare-shoes', methods=['GET'])
+@app.route('/compare', methods=['GET'])
 def process_data():
     try:
         # Load the CSV file
