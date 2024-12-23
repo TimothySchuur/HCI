@@ -24,7 +24,7 @@
                   :style="{ height: cushioningPercentage + '%', background: progressGradient }"
                 ></div>
                 <div class="col">
-                  <p style="color: #171717; font-family: 'SemiBold', sans-serif">{{ totalMileageAllowed }} KM</p>
+                  <p style="color: #171717; font-family: 'SemiBold', sans-serif">{{ mileage_remaining }} KM</p>
                   <p style="color: #171717; font-family: 'Light', sans-serif">REMAINING</p>
                 </div>
               </div>
@@ -58,6 +58,7 @@
         <button @click="profilePage">Go back</button>
         <div>
           <button class="add-shoe-button" @click="openShoeSelection">Add a Shoe</button>
+          <button class="fetch-activities-button" @click="fetchActivities">Fetch Activities</button>
         </div>
         <div v-if="activities.length > 0">
           <ul class="activity-list">
@@ -68,6 +69,10 @@
             >
               <strong>{{ activity.name }}</strong>
               <p>Distance: {{ activity.distance }} meters</p>
+              <div class="activity-actions">
+                <button class="add-activity-button" @click="addActivity(activity, index)">Add Activity</button>
+                <button class="remove-activity-button" @click="removeActivity(index)">Don't Add Activity</button>
+              </div>
             </li>
           </ul>
         </div>
@@ -75,7 +80,6 @@
           <p>Loading activities...</p>
         </div>
       </div>
-
       <!-- Shoe Selection Modal -->
       <div v-if="shoeSelectionOpen" class="modal">
         <h2>Select a Shoe</h2>
@@ -108,9 +112,9 @@ export default {
     const shoes = ref([]);
     const shoeSelectionOpen = ref(false);
     const profileClicked = ref(false);
-    const cushioningPercentage = 79;
+    const cushioningPercentage = 50;
     const kmRan = ref(0); // Initialize mileage run
-    const totalMileageAllowed = ref(0); // Initialize total mileage allowed
+    const mileage_remaining = ref(0); // Initialize total mileage allowed
     const activities = ref([]);
 
     // Navigate to /login
@@ -119,8 +123,12 @@ export default {
     };
 
     // Profile page toggle
-    const profilePage = () => {
-      profileClicked.value = !profileClicked.value;
+    const profilePage = async () => {
+      if (profileClicked.value) {
+        // If navigating back to the homepage, refresh mileage data
+        await fetchMileageRun();
+      }
+      profileClicked.value = !profileClicked.value; // Toggle the profile view
     };
 
     const fetchUserProfile = async () => {
@@ -148,17 +156,15 @@ export default {
         // Check and set mileage data
         if (response.data.mileage) {
           kmRan.value = response.data.mileage.mileage_run; // Update mileage run
-          totalMileageAllowed.value = response.data.mileage.total_mileage_allowed; // Update total mileage allowed
+          mileage_remaining.value = response.data.mileage.mileage_remaining; // Update total mileage allowed
         } else {
           kmRan.value = 0; // Default value if no data
-          totalMileageAllowed.value = 0; // Default value if no data
+          mileage_remaining.value = 0; // Default value if no data
         }
       } catch (error) {
         console.error('Error fetching user profile:', error.response?.data || error.message);
       }
     };
-
-
 
     // Fetch available shoes
     const fetchShoes = async () => {
@@ -207,12 +213,64 @@ export default {
         const response = await axios.get('http://localhost:5000/user/mileage-run', {
           headers: { Authorization: `Bearer ${token}` },
         });
+
+        // Update mileage run and remaining mileage
         kmRan.value = response.data.mileage_run; // Update kmRan with mileage_run
-        totalMileageAllowed.value = response.data.total_mileage_allowed; // Update totalMileageAllowed
+        mileage_remaining.value = response.data.mileage_remaining; // Update mileage_remaining
+
+        // Fetch and set cushioning percentage
+        const percentageResponse = await axios.get('http://localhost:5000/cushioning-percentage', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        cushioningPercentage.value = percentageResponse.data.cushioning_percentage; // Update cushioning percentage
       } catch (error) {
-        console.error('Error fetching mileage_run:', error.response?.data || error.message);
+        console.error('Error fetching mileage_run or cushioning percentage:', error.response?.data || error.message);
       }
     };
+  
+    const fetchActivities = async () => {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        console.error('No token found in localStorage');
+        return;
+      }
+
+      try {
+        const response = await axios.get('http://localhost:5000/activities', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        activities.value = response.data; // Update activities array with fetched data
+      } catch (error) {
+        console.error('Error fetching activities:', error.response?.data || error.message);
+      }
+    };
+
+    const addActivity = async (activity, index) => {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        console.error('No token found in localStorage');
+        return;
+      }
+
+      try {
+        await axios.post(
+          'http://localhost:5000/update-activities',
+          { activity_id: activity.id },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        // Optionally, remove the activity from the list after adding
+        removeActivity(index);
+      } catch (error) {
+        console.error('Error adding activity:', error.response?.data || error.message);
+      }
+    };
+
+    const removeActivity = (index) => {
+      activities.value.splice(index, 1); // Remove activity from the array
+    };
+
+
 
     const checkLoginStatus = async () => {
       const token = localStorage.getItem('authToken');
@@ -238,7 +296,6 @@ export default {
       }
     };
 
-    // Computed property for dynamic gradient
     const progressGradient = computed(() => {
       const brightnessFactor = cushioningPercentage / 100;
       const adjustedTopColor = `rgb(
@@ -247,6 +304,7 @@ export default {
         ${52 + (191 - 52) * (1 - brightnessFactor)})`;
       return `linear-gradient(to top, #C5CBBF, ${adjustedTopColor})`;
     });
+
 
     // Component mounted
     onMounted(() => {
@@ -270,7 +328,10 @@ export default {
       progressGradient,
       activities,
       fetchMileageRun,
-      totalMileageAllowed
+      mileage_remaining,
+      fetchActivities,
+      addActivity,
+      removeActivity,
     };
   },
 };
@@ -437,6 +498,48 @@ background-color: #171717;
   text-align: center;
   position: absolute;
   bottom: 18px;
+}
+
+.fetch-activities-button {
+  background-color: #42b983;
+  border: none;
+  padding: 10px 20px;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px; /* Adjust spacing */
+}
+
+.fetch-activities-button:hover {
+  background-color: #357a6f;
+}
+
+.activity-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.add-activity-button,
+.remove-activity-button {
+  background-color: #42b983;
+  border: none;
+  padding: 8px 16px;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.add-activity-button:hover {
+  background-color: #357a6f;
+}
+
+.remove-activity-button {
+  background-color: #e74c3c;
+}
+
+.remove-activity-button:hover {
+  background-color: #c0392b;
 }
 
   </style>

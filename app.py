@@ -9,6 +9,9 @@ from pprint import pprint
 import pandas as pd
 from dotenv import load_dotenv
 import os
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from sqlalchemy import create_engine
+from sqlalchemy.exc import SQLAlchemyError
 
 # Flask app initialization
 app = Flask(__name__)
@@ -24,10 +27,10 @@ def after_request(response):
     return response
 
 # Database configuration
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://timothyschuur:password@localhost/hci_db'
+app.config['SECRET_KEY'] = "your_secret_key"
+app.config['JWT_SECRET_KEY'] = "your_jwt_secret_key"
+# app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://reinierbos:password@localhost:5432/hci_db'
 
 db = SQLAlchemy(app)
 jwt = JWTManager(app)
@@ -48,18 +51,22 @@ class Users(db.Model):
 # Shoes table (static shoe data)
 class Shoes(db.Model):
     __tablename__ = 'shoes'
-    id = db.Column(db.Integer, primary_key=True)
-    shoe_brand = db.Column(db.String(100), nullable=False)
-    model_name = db.Column(db.String(100), nullable=False)
-    price = db.Column(db.Float, nullable=False)
-    main_focus = db.Column(db.String(100), nullable=False)
-    eco_friendly = db.Column(db.Boolean, nullable=False)
-    foot_type = db.Column(db.String(100), nullable=False)
-    cushioning_rate = db.Column(db.Integer, nullable=False)
-    durability_rate = db.Column(db.Integer, nullable=False)
-    pace_rate = db.Column(db.Integer, nullable=False)
+    
+    # Columns matching your table structure
+    id = db.Column(db.Integer, primary_key=True)  # Primary Key
+    shoe_brand = db.Column(db.String(100), nullable=False)  # Brand of the shoe
+    model_name = db.Column(db.String(100), nullable=False)  # Model of the shoe
+    price = db.Column(db.Float, nullable=False)  # Price of the shoe
+    mileage = db.Column(db.Integer, nullable=False)  # Maximum mileage of the shoe
+    main_focus = db.Column(db.String(100), nullable=False)  # Main focus (e.g., speed, durability)
+    eco_friendly = db.Column(db.Boolean, nullable=False)  # Eco-friendly status (True/False)
+    foot_type = db.Column(db.String(100), nullable=False)  # Foot type compatibility
+    cushioning_rate = db.Column(db.Integer, nullable=False)  # Cushioning rate
+    durability_rate = db.Column(db.Integer, nullable=False)  # Durability rate
+    pace_rate = db.Column(db.Integer, nullable=False)  # Pace rate
+    gender = db.Column(db.String(50), nullable=False)  # Gender (e.g., Men, Women, Unisex)
 
-    # Relationship to UserShoes
+    # Relationship to UserShoes (if needed)
     user_shoes = db.relationship('UserShoes', back_populates='shoe')
 
 # UserShoes table (junction table with stats)
@@ -69,13 +76,12 @@ class UserShoes(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # ForeignKey links to Users table
     shoe_id = db.Column(db.Integer, db.ForeignKey('shoes.id'), nullable=False)
     mileage_run = db.Column(db.Float, default=0.0, nullable=False)
+    mileage_remaining = db.Column(db.Integer, nullable=False)
     total_mileage_allowed = db.Column(db.Float, nullable=False)
 
     # Relationships
     user = db.relationship('Users', back_populates='user_shoes')  # Links back to Users
     shoe = db.relationship('Shoes', back_populates='user_shoes')  # Links back to Shoes
-
-from flask_jwt_extended import jwt_required, get_jwt_identity
 
 @app.route('/verify-token', methods=['GET'])
 @jwt_required()
@@ -152,7 +158,7 @@ def user_profile():
         }
         mileage_data = {
             'mileage_run': user_shoe.mileage_run,
-            'total_mileage_allowed': user_shoe.total_mileage_allowed
+            'mileage_remaining': user_shoe.mileage_remaining
         }
 
     return jsonify({
@@ -176,15 +182,13 @@ def logout():
     revoked_tokens.add(token_jti)
     return jsonify({'message': 'Successfully logged out'}), 200
 
-
-client_secret = os.getenv('STRAVA_CLIENT_SECRET')
-
 # Initialize the Strava client
 client = Client()
 
 # Replace with your application's Client ID and desired redirect URI
-client_id = os.getenv('STRAVA_CLIENT_ID')
-redirect_uri = os.getenv('STRAVA_REDIRECT_URI') # Must match Strava's settings
+client_id = 143329
+client_secret = "b9154a522c6b3e5fc1aa607054a08c0cc8994627"
+redirect_uri = "http://127.0.0.1:5000/authorize"
 
 @app.route('/check_strava', methods=['GET'])
 def check_strava_page():
@@ -243,7 +247,8 @@ def strava_callback():
 def activities():
     try:
         # Fetch activities using the Strava client
-        activities = client.get_activities(limit=10)
+        activities = client.get_activities(limit=1)
+        print(activities)
         
         # Extract relevant information and preprocess distance
         activities_list = []
@@ -259,24 +264,82 @@ def activities():
     except Exception as e:
         print(f"Error fetching activities: {e}")
         return jsonify({'error': 'Failed to fetch activities'}), 500
+    
+@app.route('/update-activities', methods=['POST'])
+@jwt_required()
+def update_activities():
+    # Fetch activities from the client
+    activities = client.get_activities(limit=1)
+    activities_list = []
+    for activity in activities:
+        activities_list.append({
+            'distance': activity.distance.magnitude if hasattr(activity.distance, 'magnitude') else None,  # Extract numeric value
+        })
+    
+    # Convert the distance to kilometers
+    distance = activities_list[0]['distance'] / 1000
+    print(f"Distance (km): {distance}")
 
+    # Get the current user from the JWT token
+    current_user_email = get_jwt_identity()
+    user = Users.query.filter_by(email=current_user_email).first()
 
-# Endpoint to fetch all shoes
-@app.route('/shoes', methods=['GET'])
-def get_shoes():
-    shoes = Shoes.query.all()
-    return jsonify([{
-        'id': shoe.id,
-        'shoe_brand': shoe.shoe_brand,
-        'model_name': shoe.model_name,
-        'price': shoe.price,
-        'main_focus': shoe.main_focus,
-        'eco_friendly': shoe.eco_friendly,
-        'foot_type': shoe.foot_type,
-        'cushioning_rate': shoe.cushioning_rate,
-        'durability_rate': shoe.durability_rate,
-        'pace_rate': shoe.pace_rate,
-    } for shoe in shoes])
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    # Get the user's shoe
+    user_shoe = UserShoes.query.filter_by(user_id=user.id).first()
+
+    if not user_shoe:
+        return jsonify({'error': 'No shoe found for the user'}), 404
+
+    # Update mileage_run
+    user_shoe.mileage_run += distance
+    print(f"Updated mileage_run: {user_shoe.mileage_run}")
+
+    # Calculate remaining mileage and update the mileage_remaining field
+    user_shoe.mileage_remaining = max(0, user_shoe.total_mileage_allowed - user_shoe.mileage_run)
+    print(f"Updated mileage_remaining: {user_shoe.mileage_remaining}")
+
+    # Commit changes to the database
+    db.session.commit()
+
+    return jsonify({'mileage_remaining': user_shoe.mileage_remaining}), 200
+
+def calculate_cushioning_percentage(total_mileage_allowed, mileage_remaining):
+    """
+    Calculate the percentage of shoe cushioning remaining.
+
+    Parameters:
+        total_mileage_allowed (float): The total mileage the shoe can handle.
+        mileage_remaining (float): The mileage remaining for the shoe.
+
+    Returns:
+        float: The percentage of cushioning remaining (0 to 100).
+    """
+    if total_mileage_allowed <= 0:
+        return 0  # To handle edge cases where total mileage allowed is zero or negative
+    percentage_remaining = (mileage_remaining / total_mileage_allowed) * 100
+    return max(0, min(percentage_remaining, 100))  # Ensure the percentage is within 0 to 100
+
+@app.route('/cushioning-percentage', methods=['GET'])
+@jwt_required()
+def get_cushioning_percentage():
+    current_user_email = get_jwt_identity()
+    user = Users.query.filter_by(email=current_user_email).first()
+
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    user_shoe = UserShoes.query.filter_by(user_id=user.id).first()
+    if not user_shoe:
+        return jsonify({'error': 'No shoe found for the user'}), 404
+
+    percentage = (user_shoe.mileage_remaining / user_shoe.total_mileage_allowed) * 100
+    percentage = round(max(0, min(percentage, 100)))  # Ensure it's between 0 and 100
+    print(round(percentage))
+    return jsonify({'cushioning_percentage': percentage}), 200
+
 
 @app.route('/user/add-shoe', methods=['POST'])
 @jwt_required()
@@ -302,12 +365,19 @@ def add_shoe_to_user():
     if UserShoes.query.filter_by(user_id=user.id, shoe_id=shoe.id).first():
         return jsonify({'error': 'Shoe already added'}), 400
 
-    # Add the shoe to the user
-    user_shoe = UserShoes(user_id=user.id, shoe_id=shoe.id, total_mileage_allowed=shoe.durability_rate)
+    # Add the shoe to the user with mileage_remaining initialized
+    user_shoe = UserShoes(
+        user_id=user.id,
+        shoe_id=shoe.id,
+        total_mileage_allowed=shoe.mileage,
+        mileage_remaining=shoe.mileage  # Initialize mileage_remaining
+    )
+    print(f"Adding shoe with mileage: {shoe.mileage}")  # Debugging line
     db.session.add(user_shoe)
     db.session.commit()
 
-    return jsonify({'message': 'Shoe added successfully'}), 200 
+    return jsonify({'message': 'Shoe added successfully'}), 200
+
 
 @app.route('/user/mileage-run', methods=['GET'])
 @jwt_required()
@@ -327,7 +397,7 @@ def get_mileage_run():
 
     return jsonify({
         'mileage_run': user_shoe.mileage_run,
-        'total_mileage_allowed': user_shoe.total_mileage_allowed,  # Include total_mileage_allowed
+        'mileage_remaining': user_shoe.mileage_remaining,  # Include total_mileage_allowed
     }), 200
 
 
@@ -340,6 +410,23 @@ def process_data():
         return jsonify(df.to_dict(orient="records"))
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+# Endpoint to fetch all shoes
+@app.route('/shoes', methods=['GET'])
+def get_shoes():
+    shoes = Shoes.query.all()
+    return jsonify([{
+        'id': shoe.id,
+        'shoe_brand': shoe.shoe_brand,
+        'model_name': shoe.model_name,
+        'price': shoe.price,
+        'main_focus': shoe.main_focus,
+        'eco_friendly': shoe.eco_friendly,
+        'foot_type': shoe.foot_type,
+        'cushioning_rate': shoe.cushioning_rate,
+        'durability_rate': shoe.durability_rate,
+        'pace_rate': shoe.pace_rate,
+    } for shoe in shoes])
 
 # @app.route('/associate_shoe', methods=['POST'])
 # def associate_shoe():
