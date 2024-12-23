@@ -1,8 +1,10 @@
 <template>
     <div class="container">
-      <h1>Connect Your Strava Account</h1>
+      <div class="height">
+      <h1 class="title">STRAVA CONNECT</h1>
       <p>To proceed, please connect your Strava account to synchronize your data.</p>
-      <button @click="connectStrava">Connect with Strava</button>
+      <button @click="connectStrava">CONNECT</button>
+    </div>
     </div>
   </template>
   
@@ -28,27 +30,42 @@
   }
   
   .container {
-    margin-top: 50px;
+    width: 90%;
+  height: 100vh;
+  position: relative;
   }
   
-  h1 {
-    color: #333;
+  .title {
+  width: 60%;
+  text-align: left;
+  /* margin-top: 122%; */
+}
+  .height{
+position: absolute;
+  width: 100%;
+  bottom: 180px;
   }
-  
+
   p {
-    font-size: 16px;
-    color: #555;
+  margin-top: 18px;
+  width: 100%;
+  text-align: left;
+  font-family: 'Text', sans-serif;
   }
   
   button {
-    padding: 10px 20px;
-    margin: 20px 0;
-    background-color: #fc4c02; /* Strava's primary color */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
+    margin-top: 18px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 16px;
+  border-radius: 8px;
+  color: #d6d6d6;
+  font-size: 22px;
+  font-family: "Light", sans-serif;
+  border: none;
+  background: linear-gradient(to right, #e02b07, #fc6e02);
+  font-family: "Headers", sans-serif;
+  padding: 22px;
   }
   
   button:hover {
