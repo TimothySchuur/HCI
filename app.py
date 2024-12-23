@@ -323,7 +323,7 @@ def get_mileage_run():
     }), 200
 
 
-@app.route('/compare-shoes', methods=['GET'])
+@app.route('/compare', methods=['GET'])
 def process_data():
     try:
         # Load the CSV file
