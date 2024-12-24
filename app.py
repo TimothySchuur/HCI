@@ -165,8 +165,20 @@ def user_profile():
     if not user:
         return jsonify({'error': 'User not found'}), 404
 
-    # Fetch main shoe from Users table
+    user_shoes = UserShoes.query.filter_by(user_id=user.id).all()
     main_shoe = UserShoes.query.filter_by(id=user.main_shoe_id).first() if user.main_shoe_id else None
+
+    user_shoes_data = [
+        {
+            'id': shoe.id,
+            'shoe_brand': shoe.shoe.shoe_brand,
+            'model_name': shoe.shoe.model_name,
+            'mileage_run': shoe.mileage_run,
+            'mileage_remaining': shoe.mileage_remaining,
+            'cushioning_percentage': (shoe.mileage_remaining / shoe.total_mileage_allowed) * 100
+        }
+        for shoe in user_shoes
+    ]
 
     main_shoe_data = None
     if main_shoe:
@@ -179,23 +191,10 @@ def user_profile():
             'cushioning_percentage': (main_shoe.mileage_remaining / main_shoe.total_mileage_allowed) * 100
         }
 
-    user_shoes = UserShoes.query.filter_by(user_id=user.id).all()
-    shoes_data = [
-        {
-            'id': user_shoe.id,
-            'shoe_brand': user_shoe.shoe.shoe_brand,
-            'model_name': user_shoe.shoe.model_name,
-            'mileage_run': user_shoe.mileage_run,
-            'mileage_remaining': user_shoe.mileage_remaining,
-            'cushioning_percentage': (user_shoe.mileage_remaining / user_shoe.total_mileage_allowed) * 100
-        }
-        for user_shoe in user_shoes
-    ]
-
     return jsonify({
         'username': user.username,
         'mainShoe': main_shoe_data,
-        'userShoes': shoes_data,
+        'userShoes': user_shoes_data
     }), 200
 
 
@@ -362,27 +361,27 @@ def get_cushioning_percentage():
 def add_shoe():
     current_user_email = get_jwt_identity()
     user = Users.query.filter_by(email=current_user_email).first()
+
     if not user:
         return jsonify({'error': 'User not found'}), 404
 
-    data = request.get_json()
-    shoe_id = data.get('shoe_id')
-
+    shoe_id = request.json.get('shoe_id')
     shoe = Shoes.query.get(shoe_id)
+
     if not shoe:
         return jsonify({'error': 'Shoe not found'}), 404
 
-    new_user_shoe = UserShoes(
+    user_shoe = UserShoes(
         user_id=user.id,
-        shoe_id=shoe_id,
+        shoe_id=shoe.id,
         mileage_run=0,
         mileage_remaining=shoe.mileage,
         total_mileage_allowed=shoe.mileage
     )
-    db.session.add(new_user_shoe)
+    db.session.add(user_shoe)
     db.session.commit()
 
-    return jsonify({'message': 'Shoe added successfully'}), 201
+    return jsonify({'message': f'Shoe {shoe.shoe_brand} - {shoe.model_name} added to user'}), 200
 
 
 @app.route('/user/set-main-shoe', methods=['POST'])
@@ -390,17 +389,19 @@ def add_shoe():
 def set_main_shoe():
     current_user_email = get_jwt_identity()
     user = Users.query.filter_by(email=current_user_email).first()
+
     if not user:
         return jsonify({'error': 'User not found'}), 404
 
     data = request.get_json()
     shoe_id = data.get('shoe_id')
 
-    # Check if the shoe belongs to the user
-    user_shoe = UserShoes.query.filter_by(user_id=user.id, shoe_id=shoe_id).first()
+    # Check if the shoe exists in the user's account
+    user_shoe = UserShoes.query.filter_by(id=shoe_id, user_id=user.id).first()
     if not user_shoe:
-        return jsonify({'error': 'Shoe not associated with user'}), 400
+        return jsonify({'error': 'Shoe not found'}), 404
 
+    # Set the main shoe
     user.main_shoe_id = shoe_id
     db.session.commit()
 
@@ -427,6 +428,36 @@ def get_mileage_run():
         'mileage_run': user_shoe.mileage_run,
         'mileage_remaining': user_shoe.mileage_remaining,  # Include total_mileage_allowed
     }), 200
+
+
+@app.route('/user/remove-shoe/<int:shoe_id>', methods=['DELETE'])
+@jwt_required()
+def remove_shoe(shoe_id):
+    current_user_email = get_jwt_identity()
+    user = Users.query.filter_by(email=current_user_email).first()
+
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    user_shoe = UserShoes.query.filter_by(id=shoe_id, user_id=user.id).first()
+
+    if not user_shoe:
+        return jsonify({'error': 'Shoe not found'}), 404
+
+    # Check if the shoe to be removed is the main shoe
+    if user.main_shoe_id == shoe_id:
+        # Unset the main shoe before removing it
+        user.main_shoe_id = None
+        db.session.commit()
+
+    try:
+        # Delete the shoe from user_shoes
+        db.session.delete(user_shoe)
+        db.session.commit()
+        return jsonify({'message': 'Shoe removed successfully'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
 
 
 @app.route('/compare', methods=['GET'])

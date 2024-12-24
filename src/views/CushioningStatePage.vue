@@ -1,130 +1,114 @@
 <template>
+<!-- Display the main page content if user is logged in -->
+<div class="width" v-if="!profileClicked">
+  <h1 class="title">CUSHIONING STATE</h1>
+  <div class="main">
+    <div class="container top">
+      <div class="content top-c">
+        <ShoeViewer :progress-gradient="progressGradient" />
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: row;">
+      <div class="container">
+        <div class="content progress-bar">
+          <div class="dashed-line"></div>
+          <div
+            class="progress"
+            :style="{ height: cushioningPercentage + '%', background: progressGradient }"
+          ></div>
+          <div class="col">
+            <p style="color: #171717; font-family: 'SemiBold', sans-serif">{{ mileage_remaining }} KM</p>
+            <p style="color: #171717; font-family: 'Light', sans-serif">REMAINING</p>
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column">
+        <div class="container">
+          <div class="content km-ran">
+            <div class="center">
+              <h1>{{ kmRan }} KM</h1> <!-- Dynamically display the mileage_run value -->
+              <h4>RAN</h4>
+            </div>
+          </div>
+        </div>
+        <div class="container">
+          <div class="content profile" @click="toggleProfileView" style="cursor: pointer;">
+            <div class="center">
+              <img class="profile-img" src="../img/profile-circle.svg" />
+              <h3 class="margin name">Main Shoe:</h3>
+              <h4 class="margin shoe">{{ selectedShoe }}</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Profile Page -->
+<div v-else>
+  <h2>Profile Page</h2>
+  <button @click="toggleProfileView">Go Back</button>
   <div>
-    <!-- Display "Log In" button if user is not logged in -->
-    <div v-if="!isLoggedIn" class="center-login">
-      <h1>Welcome to Cushioning State</h1>
-      <button @click="goToLogin">Log In</button>
-    </div>
-    <!-- Display the main page content if user is logged in -->
-    <div v-else>
-      <div class="width" v-if="!profileClicked">
-        <h1 class="title">CUSHIONING STATE</h1>
-        <div class="main">
-          <div class="container top">
-            <div class="content top-c">
-              <ShoeViewer :progress-gradient="progressGradient" />
-            </div>
-          </div>
-          <div style="display: flex; flex-direction: row;">
-            <div class="container">
-              <div class="content progress-bar">
-                <div class="dashed-line"></div>
-                <div
-                  class="progress"
-                  :style="{ height: cushioningPercentage + '%', background: progressGradient }"
-                ></div>
-                <div class="col">
-                  <p style="color: #171717; font-family: 'SemiBold', sans-serif">{{ mileage_remaining }} KM</p>
-                  <p style="color: #171717; font-family: 'Light', sans-serif">REMAINING</p>
-                </div>
-              </div>
-            </div>
-            <div style="display: flex; flex-direction: column">
-              <div class="container">
-                <div class="content km-ran">
-                  <div class="center">
-                    <h1>{{ kmRan }} KM</h1> <!-- Dynamically display the mileage_run value -->
-                    <h4>RAN</h4>
-                  </div>
-                </div>
-              </div>
-              <div class="container">
-                <div class="content profile">
-                  <div class="center">
-                    <h3 class="margin name">Main Shoe:</h3>
-                    <h4 class="margin shoe">{{ selectedShoe }}</h4>
-                    <p>Mileage Run: {{ kmRan }} KM</p>
-                    <p>Mileage Remaining: {{ mileage_remaining }} KM</p>
-                    <p>Cushioning: {{ cushioningPercentage.toFixed(2) }}%</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- Profile Page -->
-      <div v-else>
-        <h2>Profile Page</h2>
-        <button @click="profilePage">Go back</button>
-        <div>
-          <!-- Add a Shoe -->
-          <button class="add-shoe-button" @click="toggleShoeDropdown">Add a Shoe</button>
-          <div v-if="showShoeDropdown" class="shoe-dropdown">
-            <ul>
-              <li v-for="shoe in allShoes" :key="shoe.id" @click="addShoeToAccount(shoe)">
-                {{ shoe.shoe_brand }} - {{ shoe.model_name }}
-              </li>
-            </ul>
-          </div>
-        </div>
-        <!-- User Shoes Overview -->
-        <div v-if="userShoes.length > 0" class="user-shoes-list">
-          <h3>Your Shoes</h3>
-          <ul>
-            <li v-for="shoe in userShoes" :key="shoe.id" class="shoe-item">
-              <p><strong>{{ shoe.shoe_brand }} - {{ shoe.model_name }}</strong></p>
-              <p>Mileage Run: {{ shoe.mileage_run }} KM</p>
-              <p>Mileage Remaining: {{ shoe.mileage_remaining }} KM</p>
-              <p>Cushioning: {{ shoe.cushioning_percentage.toFixed(2) }}%</p>
-              <button @click="showShoeOptions(shoe.id)" v-if="shoe.id !== selectedShoeId">
-                Options
-              </button>
-              <!-- Shoe Options -->
-              <div v-if="shoe.id === showOptionsForShoeId">
-                <button @click="setAsMainShoe(shoe)">Set as Default</button>
-                <button @click="closeShoeOptions">Cancel</button>
-              </div>
-            </li>
-          </ul>
-        </div>
-        <div v-else>
-          <p>No shoes added yet.</p>
-        </div>
-      </div>
-      <!-- Activities List -->
-      <div v-if="activities.length > 0">
-        <h3>Your Activities</h3>
-        <ul class="activity-list">
-          <li
-            v-for="(activity, index) in activities"
-            :key="index"
-            class="activity-item"
-          >
-            <strong>{{ activity.name }}</strong>
-            <p>Distance: {{ activity.distance }} meters</p>
-            <div class="activity-actions">
-              <button class="add-activity-button" @click="addActivity(activity, index)">Add Activity</button>
-              <button class="remove-activity-button" @click="removeActivity(index)">Don't Add Activity</button>
-            </div>
-          </li>
-        </ul>
-      </div>
-      <div v-else>
-        <p>Loading activities...</p>
-      </div>
-    </div>
-    <!-- Shoe Selection Modal -->
-    <div v-if="shoeSelectionOpen" class="modal">
-      <h2>Select a Shoe</h2>
+  <!-- Add Shoe Section -->
+  <div>
+    <button @click="toggleShoeDropdown">Add a Shoe</button>
+    <div v-if="showShoeDropdown" class="dropdown">
       <ul>
-        <li v-for="shoe in shoes" :key="shoe.id" @click="setMainShoe(shoe.id)">
+        <li
+          v-for="shoe in allShoes"
+          :key="shoe.id"
+          @click="addShoeToAccount(shoe)"
+        >
           {{ shoe.shoe_brand }} - {{ shoe.model_name }}
         </li>
       </ul>
-      <button @click="closeShoeSelection">Close</button>
     </div>
   </div>
+  <!-- User Shoes Overview -->
+  <div v-if="userShoes.length > 0" class="user-shoes-list">
+    <h3>Your Shoes</h3>
+    <ul>
+      <li v-for="shoe in userShoes" :key="shoe.id">
+        <p><strong>{{ shoe.shoe_brand }} - {{ shoe.model_name }}</strong></p>
+        <p>Mileage Run: {{ shoe.mileage_run || 0 }} KM</p>
+        <p>Mileage Remaining: {{ shoe.mileage_remaining || 0 }} KM</p>
+        <p>Cushioning: {{ shoe.cushioningPercentage !== undefined ? shoe.cushioningPercentage.toFixed(2) : "N/A" }}%</p>
+        <button v-if="shoe.id !== mainShoe?.id" @click="setAsMainShoe(shoe)">
+          Set as Default
+        </button>
+        <button @click="removeShoe(shoe.id)">Remove</button>
+      </li>
+    </ul>
+  </div>
+  <div v-else>
+    <p>No shoes added yet.</p>
+  </div>
+<!-- Activities List -->
+  <div>
+    <button @click="fetchLatestActivity" class="fetch-latest-activity-button">Fetch Latest Activity</button>
+    <div v-if="activities.length > 0">
+      <h3>Your Activities</h3>
+      <ul class="activity-list">
+        <li
+          v-for="(activity, index) in activities"
+          :key="index"
+          class="activity-item"
+        >
+          <strong>{{ activity.name }}</strong>
+          <p>Distance: {{ activity.distance }} meters</p>
+          <div class="activity-actions">
+            <button class="add-activity-button" @click="addActivity(activity, index)">Add Activity</button>
+            <button class="remove-activity-button" @click="removeActivity(index)">Don't Add Activity</button>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div v-else>
+      <p>Loading activities...</p>
+    </div>
+  </div>  
+</div>
+</div>
 </template>
 
 
@@ -139,40 +123,40 @@ export default {
   components: { ShoeViewer },
   setup() {
     const router = useRouter();
+
+    // State variables
     const isLoggedIn = ref(false);
     const username = ref('');
     const selectedShoe = ref('');
-    const shoes = ref([]);
-    const shoeSelectionOpen = ref(false);
-    const profileClicked = ref(false);
-    const cushioningPercentage = ref(0);
+    const mainShoe = ref(null);
     const userShoes = ref([]);
-    const kmRan = ref(0); // Initialize mileage run
-    const mileage_remaining = ref(0); // Initialize total mileage allowed
-    const activities = ref([]);
     const allShoes = ref([]);
-    const selectedShoeId = ref(null);
-    const showOptionsForShoeId = ref(null);
+    const activities = ref([]);
+    const shoeSelectionOpen = ref(false);
     const showShoeDropdown = ref(false);
+    const showOptionsForShoeId = ref(null);
 
-    const toggleShoeDropdown = () => {
-      showShoeDropdown.value = !showShoeDropdown.value;
-    };
+    const cushioningPercentage = ref(0);
+    const kmRan = ref(0);
+    const mileage_remaining = ref(0);
 
-    // Navigate to /login
-    const goToLogin = () => {
-      router.push('/login');
-    };
+    // Navigation
+    const goToLogin = () => router.push('/login');
+    const profileClicked = ref(false);
 
-    // Profile page toggle
-    const profilePage = async () => {
+    const toggleProfileView = async () => {
       if (profileClicked.value) {
-        // If navigating back to the homepage, refresh mileage data
-        await fetchMileageRun();
+        // If the user is going back to the main view, refresh the user profile
+        await fetchUserProfile();
       }
-      profileClicked.value = !profileClicked.value; // Toggle the profile view
+      else if (!profileClicked.value) {
+        // If the user is going back to the main view, refresh the user profile
+        await fetchAllShoes();
+      }
+      profileClicked.value = !profileClicked.value; // Toggle profile view
     };
 
+    // Fetch user profile
     const fetchUserProfile = async () => {
       const token = localStorage.getItem('authToken');
       if (!token) {
@@ -185,41 +169,37 @@ export default {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        // Update username and login status
-        username.value = response.data.username;
+        const { username: user, mainShoe: main, userShoes: shoes } = response.data;
+
+        username.value = user;
         isLoggedIn.value = true;
 
-        // Update main shoe
-        if (response.data.mainShoe) {
-          const mainShoe = response.data.mainShoe;
-          selectedShoe.value = `${mainShoe.shoe_brand} - ${mainShoe.model_name}`;
-          cushioningPercentage.value = mainShoe.cushioning_percentage || 0;
-          kmRan.value = mainShoe.mileage_run || 0;
-          mileage_remaining.value = mainShoe.mileage_remaining || 0;
+        if (main) {
+          mainShoe.value = main;
+          selectedShoe.value = `${main.shoe_brand} - ${main.model_name}`;
+          cushioningPercentage.value = main.cushioning_percentage || 0;
+          kmRan.value = main.mileage_run || 0;
+          mileage_remaining.value = main.mileage_remaining || 0;
         } else {
-          selectedShoe.value = 'No main shoe selected';
-          cushioningPercentage.value = 0;
-          kmRan.value = 0;
-          mileage_remaining.value = 0;
+          resetMainShoe();
         }
 
-        // Update user shoes
-        if (response.data.userShoes) {
-          userShoes.value = response.data.userShoes.map(shoe => ({
-            ...shoe,
-            cushioningPercentage: shoe.cushioning_percentage || 0,
-          }));
-        } else {
-          userShoes.value = [];
-        }
-
-        console.log('User profile data:', response.data);
+        userShoes.value = shoes || [];
       } catch (error) {
         console.error('Error fetching user profile:', error.response?.data || error.message);
       }
     };
 
-    const setMainShoe = async (shoeId) => {
+    // Reset main shoe when none is selected
+    const resetMainShoe = () => {
+      mainShoe.value = null;
+      selectedShoe.value = 'No main shoe selected';
+      cushioningPercentage.value = 0;
+      kmRan.value = 0;
+      mileage_remaining.value = 0;
+    };
+
+    const setAsMainShoe = async (shoe) => {
       const token = localStorage.getItem('authToken');
       if (!token) {
         console.error('No token found in localStorage');
@@ -227,18 +207,22 @@ export default {
       }
 
       try {
-        await axios.post(`http://localhost:5000/user/set-main-shoe/${shoeId}`, null, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        console.log('Main shoe updated');
-        await fetchUserProfile(); // Refresh profile data
+        // Call the API to set the main shoe
+        const response = await axios.post(
+          'http://localhost:5000/user/set-main-shoe',
+          { shoe_id: shoe.id },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        console.log(response.data.message);
+        await fetchUserProfile(); // Refresh profile data after updating the main shoe
       } catch (error) {
         console.error('Error setting main shoe:', error.response?.data || error.message);
       }
     };
 
 
-    // Remove a shoe from the user's account
+
+    // Remove a shoe
     const removeShoe = async (shoeId) => {
       const token = localStorage.getItem('authToken');
       if (!token) {
@@ -250,26 +234,13 @@ export default {
         await axios.delete(`http://localhost:5000/user/remove-shoe/${shoeId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        // Remove the shoe locally from the list
         userShoes.value = userShoes.value.filter((shoe) => shoe.id !== shoeId);
-        console.log('Shoe removed:', shoeId);
       } catch (error) {
         console.error('Error removing shoe:', error.response?.data || error.message);
       }
     };
 
-    // Fetch available shoes
-    const fetchShoes = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/shoes');
-        shoes.value = response.data;
-      } catch (error) {
-        console.error('Error fetching shoes:', error.response?.data || error.message);
-      }
-    };
-
-    // Add shoe to user's account without changing the main shoe
-    const selectShoe = async (shoe) => {
+    const addShoeToAccount = async (shoe) => {
       const token = localStorage.getItem('authToken');
       if (!token) {
         console.error('No token found in localStorage');
@@ -277,29 +248,35 @@ export default {
       }
 
       try {
+        // Add the shoe to the user's account via the API
         await axios.post(
           'http://localhost:5000/user/add-shoe',
           { shoe_id: shoe.id },
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
-        // Refresh the list of shoes without modifying the main shoe
+        // Add the shoe locally to the userShoes array
         userShoes.value.push({
-          id: shoe.id,
-          shoe_brand: shoe.shoe_brand,
-          model_name: shoe.model_name,
-          mileage_run: 0, // Initialize mileage for a new shoe
-          mileage_remaining: shoe.mileage || 0, // Assume full mileage for a new shoe
-          cushioningPercentage: 100, // Assume 100% cushioning for a new shoe
+          ...shoe,
+          mileage_run: 0,
+          mileage_remaining: shoe.mileage || 0,
+          cushioningPercentage: 100, // Default cushioning for a new shoe
         });
 
         console.log(`Shoe added to user's account: ${shoe.shoe_brand} - ${shoe.model_name}`);
-        closeShoeSelection();
+        showShoeDropdown.value = false;
       } catch (error) {
         console.error('Error adding shoe:', error.response?.data || error.message);
       }
     };
 
+
+    // Toggle shoe dropdown
+    const toggleShoeDropdown = () => {
+      showShoeDropdown.value = !showShoeDropdown.value;
+    };
+
+    // Fetch all shoes
     const fetchAllShoes = async () => {
       try {
         const response = await axios.get('http://localhost:5000/shoes');
@@ -309,68 +286,7 @@ export default {
       }
     };
 
-    // Add a shoe to user's account
-    const addShoeToAccount = async (shoe) => {
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        console.error('No token found in localStorage');
-        return;
-      }
-
-      try {
-        await axios.post(
-          'http://localhost:5000/user/add-shoe',
-          { shoe_id: shoe.id },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        userShoes.value.push({
-          id: shoe.id,
-          shoe_brand: shoe.shoe_brand,
-          model_name: shoe.model_name,
-          mileage_run: 0,
-          mileage_remaining: shoe.mileage,
-          cushioning_percentage: 100,
-        });
-        console.log(`Added shoe to user: ${shoe.shoe_brand} - ${shoe.model_name}`);
-        showShoeDropdown.value = false;
-      } catch (error) {
-        console.error('Error adding shoe:', error.response?.data || error.message);
-      }
-    };
-
-    // Show options for a specific shoe
-    const showShoeOptions = (shoeId) => {
-      showOptionsForShoeId.value = shoeId;
-    };
-
-    // Close shoe options
-    const closeShoeOptions = () => {
-      showOptionsForShoeId.value = null;
-    };
-
-    // Set a shoe as the main shoe
-    const setAsMainShoe = async (shoe) => {
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        console.error('No token found in localStorage');
-        return;
-      }
-
-      try {
-        await axios.post(
-          'http://localhost:5000/user/set-main-shoe',
-          { shoe_id: shoe.id },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        selectedShoeId.value = shoe.id;
-        console.log(`Set shoe as main: ${shoe.shoe_brand} - ${shoe.model_name}`);
-        closeShoeOptions();
-      } catch (error) {
-        console.error('Error setting main shoe:', error.response?.data || error.message);
-      }
-    };
-
-    // Fetch mileage_run and total_mileage_allowed
+    // Fetch mileage
     const fetchMileageRun = async () => {
       const token = localStorage.getItem('authToken');
       if (!token) {
@@ -382,36 +298,24 @@ export default {
         const response = await axios.get('http://localhost:5000/user/mileage-run', {
           headers: { Authorization: `Bearer ${token}` },
         });
+        const { mileage_run, mileage_remaining, cushioning_percentage } = response.data;
 
-        // Update mileage run and remaining mileage
-        kmRan.value = response.data.mileage_run; // Update kmRan with mileage_run
-        mileage_remaining.value = response.data.mileage_remaining; // Update mileage_remaining
-
-        // Fetch and set cushioning percentage
-        const percentageResponse = await axios.get('http://localhost:5000/cushioning-percentage', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        cushioningPercentage.value = percentageResponse.data.cushioning_percentage; // Update cushioning percentage
+        kmRan.value = mileage_run;
+        mileage_remaining.value = mileage_remaining;
+        cushioningPercentage.value = cushioning_percentage;
       } catch (error) {
-        console.error('Error fetching mileage_run or cushioning percentage:', error.response?.data || error.message);
+        console.error('Error fetching mileage:', error.response?.data || error.message);
       }
     };
-  
-    const fetchActivities = async () => {
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        console.error('No token found in localStorage');
-        return;
-      }
 
+    // Activities
+    const fetchLatestActivity = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/activities', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        activities.value = response.data; // Update activities array with fetched data
+        const response = await axios.get('http://localhost:5000/activities');
+        activities.value = response.data; // Update activities with the fetched data
+        console.log('Fetched latest activities:', activities.value);
       } catch (error) {
-        console.error('Error fetching activities:', error.response?.data || error.message);
+        console.error('Error fetching latest activity:', error.response?.data || error.message);
       }
     };
 
@@ -428,21 +332,17 @@ export default {
           { activity_id: activity.id },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        // Optionally, remove the activity from the list after adding
-        removeActivity(index);
+        activities.value.splice(index, 1); // Remove added activity
       } catch (error) {
         console.error('Error adding activity:', error.response?.data || error.message);
       }
     };
 
-    const removeActivity = (index) => {
-      activities.value.splice(index, 1); // Remove activity from the array
-    };
-
+    // Check login status
     const checkLoginStatus = async () => {
       const token = localStorage.getItem('authToken');
       if (!token) {
-        router.push('/login'); // Redirect if no token
+        goToLogin();
         return;
       }
 
@@ -452,17 +352,18 @@ export default {
         });
 
         if (response.status === 200) {
-          isLoggedIn.value = true; // Mark user as logged in
-          await fetchUserProfile(); // Fetch user profile and shoe data
+          isLoggedIn.value = true;
+          await fetchUserProfile();
         } else {
-          router.push('/login'); // Redirect if token is invalid
+          goToLogin();
         }
       } catch (error) {
-        console.error('Token validation failed:', error);
-        router.push('/login'); // Redirect if error occurs
+        console.error('Error verifying token:', error.response?.data || error.message);
+        goToLogin();
       }
     };
 
+    // Progress bar gradient
     const progressGradient = computed(() => {
       const brightnessFactor = cushioningPercentage.value / 100;
       const adjustedTopColor = `rgb(
@@ -472,50 +373,45 @@ export default {
       return `linear-gradient(to top, #C5CBBF, ${adjustedTopColor})`;
     });
 
-
-    // Component mounted
     onMounted(() => {
-      checkLoginStatus(); // Verify if the user is logged in
+      checkLoginStatus();
+      fetchAllShoes();
     });
 
     return {
+      // State variables
       isLoggedIn,
       username,
       selectedShoe,
-      shoes,
-      shoeSelectionOpen,
-      profileClicked,
-      cushioningPercentage,
-      kmRan,
-      goToLogin,
-      profilePage,
-      openShoeSelection,
-      closeShoeSelection,
-      selectShoe,
-      progressGradient,
-      activities,
-      fetchMileageRun,
-      mileage_remaining,
-      fetchActivities,
-      addActivity,
-      removeActivity,
-      selectShoeForHomepage,
-      userShoes,
-      selectedShoeId,
       mainShoe,
-      setAsMainShoe,
-      showShoeOptions,
-      closeShoeOptions,
-      addShoeToAccount,
-      toggleShoeDropdown,
+      userShoes,
+      allShoes,
+      activities,
+      shoeSelectionOpen,
       showShoeDropdown,
       showOptionsForShoeId,
-      allShoes,
+      // Mileage and cushioning
+      cushioningPercentage,
+      kmRan,
+      mileage_remaining,
+      // Functions
+      goToLogin,
+      toggleProfileView,
+      fetchUserProfile,
+      setAsMainShoe,
+      removeShoe,
+      addShoeToAccount,
+      toggleShoeDropdown,
+      fetchAllShoes,
+      fetchMileageRun,
+      fetchLatestActivity,
+      addActivity,
+      progressGradient,
+      profileClicked,
     };
   },
 };
 </script>
-
 
 
 <style scoped>
@@ -743,6 +639,10 @@ background-color: #171717;
 
 .shoe-item button:hover {
   opacity: 0.8;
+}
+
+.profile-container {
+  border: 2px solid red;
 }
 
   </style>
