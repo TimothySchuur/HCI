@@ -38,7 +38,7 @@ bcrypt = Bcrypt(app)
 
 # User model
 class Users(db.Model):
-    __tablename__ = 'users'  # Fixed typo ('sers' -> 'users')
+    __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
     email = db.Column(db.String(150), unique=True, nullable=False)
@@ -46,7 +46,20 @@ class Users(db.Model):
     strava_connected = db.Column(db.Boolean, default=False)
 
     # Relationship to UserShoes
-    user_shoes = db.relationship('UserShoes', back_populates='user', cascade='all, delete-orphan')
+    user_shoes = db.relationship(
+        'UserShoes',
+        back_populates='user',
+        foreign_keys='UserShoes.user_id',  # Specify the foreign key explicitly
+        cascade='all, delete-orphan'
+    )
+
+    # Relationship for main_shoe (optional, one-to-one relationship)
+    main_shoe_id = db.Column(db.Integer, db.ForeignKey('user_shoes.id'), nullable=True)
+    main_shoe = db.relationship(
+        'UserShoes',
+        foreign_keys='Users.main_shoe_id',
+        uselist=False
+    )
 
 # Shoes table (static shoe data)
 class Shoes(db.Model):
@@ -69,7 +82,6 @@ class Shoes(db.Model):
     # Relationship to UserShoes (if needed)
     user_shoes = db.relationship('UserShoes', back_populates='shoe')
 
-# UserShoes table (junction table with stats)
 class UserShoes(db.Model):
     __tablename__ = 'user_shoes'
     id = db.Column(db.Integer, primary_key=True)
@@ -80,8 +92,15 @@ class UserShoes(db.Model):
     total_mileage_allowed = db.Column(db.Float, nullable=False)
 
     # Relationships
-    user = db.relationship('Users', back_populates='user_shoes')  # Links back to Users
-    shoe = db.relationship('Shoes', back_populates='user_shoes')  # Links back to Shoes
+    user = db.relationship(
+        'Users',
+        back_populates='user_shoes',
+        foreign_keys=[user_id]  # Explicit foreign key specification
+    )
+    shoe = db.relationship(
+        'Shoes',
+        back_populates='user_shoes'
+    )
 
 @app.route('/verify-token', methods=['GET'])
 @jwt_required()
@@ -146,25 +165,37 @@ def user_profile():
     if not user:
         return jsonify({'error': 'User not found'}), 404
 
-    user_shoe = UserShoes.query.filter_by(user_id=user.id).first()
+    # Fetch main shoe from Users table
+    main_shoe = UserShoes.query.filter_by(id=user.main_shoe_id).first() if user.main_shoe_id else None
 
-    shoe_data = None
-    mileage_data = None
-    if user_shoe:
-        shoe = Shoes.query.filter_by(id=user_shoe.shoe_id).first()
-        shoe_data = {
-            'shoe_brand': shoe.shoe_brand,
-            'model_name': shoe.model_name
+    main_shoe_data = None
+    if main_shoe:
+        main_shoe_data = {
+            'id': main_shoe.id,
+            'shoe_brand': main_shoe.shoe.shoe_brand,
+            'model_name': main_shoe.shoe.model_name,
+            'mileage_run': main_shoe.mileage_run,
+            'mileage_remaining': main_shoe.mileage_remaining,
+            'cushioning_percentage': (main_shoe.mileage_remaining / main_shoe.total_mileage_allowed) * 100
         }
-        mileage_data = {
+
+    user_shoes = UserShoes.query.filter_by(user_id=user.id).all()
+    shoes_data = [
+        {
+            'id': user_shoe.id,
+            'shoe_brand': user_shoe.shoe.shoe_brand,
+            'model_name': user_shoe.shoe.model_name,
             'mileage_run': user_shoe.mileage_run,
-            'mileage_remaining': user_shoe.mileage_remaining
+            'mileage_remaining': user_shoe.mileage_remaining,
+            'cushioning_percentage': (user_shoe.mileage_remaining / user_shoe.total_mileage_allowed) * 100
         }
+        for user_shoe in user_shoes
+    ]
 
     return jsonify({
         'username': user.username,
-        'shoe': shoe_data,
-        'mileage': mileage_data
+        'mainShoe': main_shoe_data,
+        'userShoes': shoes_data,
     }), 200
 
 
@@ -306,21 +337,6 @@ def update_activities():
 
     return jsonify({'mileage_remaining': user_shoe.mileage_remaining}), 200
 
-def calculate_cushioning_percentage(total_mileage_allowed, mileage_remaining):
-    """
-    Calculate the percentage of shoe cushioning remaining.
-
-    Parameters:
-        total_mileage_allowed (float): The total mileage the shoe can handle.
-        mileage_remaining (float): The mileage remaining for the shoe.
-
-    Returns:
-        float: The percentage of cushioning remaining (0 to 100).
-    """
-    if total_mileage_allowed <= 0:
-        return 0  # To handle edge cases where total mileage allowed is zero or negative
-    percentage_remaining = (mileage_remaining / total_mileage_allowed) * 100
-    return max(0, min(percentage_remaining, 100))  # Ensure the percentage is within 0 to 100
 
 @app.route('/cushioning-percentage', methods=['GET'])
 @jwt_required()
@@ -343,40 +359,52 @@ def get_cushioning_percentage():
 
 @app.route('/user/add-shoe', methods=['POST'])
 @jwt_required()
-def add_shoe_to_user():
-    data = request.get_json()
-    shoe_id = data.get('shoe_id')
-
-    if not shoe_id:
-        return jsonify({'error': 'Shoe ID is required'}), 400
-
+def add_shoe():
     current_user_email = get_jwt_identity()
     user = Users.query.filter_by(email=current_user_email).first()
-
     if not user:
         return jsonify({'error': 'User not found'}), 404
 
-    # Check if the shoe exists
+    data = request.get_json()
+    shoe_id = data.get('shoe_id')
+
     shoe = Shoes.query.get(shoe_id)
     if not shoe:
         return jsonify({'error': 'Shoe not found'}), 404
 
-    # Check if the user already has this shoe
-    if UserShoes.query.filter_by(user_id=user.id, shoe_id=shoe.id).first():
-        return jsonify({'error': 'Shoe already added'}), 400
-
-    # Add the shoe to the user with mileage_remaining initialized
-    user_shoe = UserShoes(
+    new_user_shoe = UserShoes(
         user_id=user.id,
-        shoe_id=shoe.id,
-        total_mileage_allowed=shoe.mileage,
-        mileage_remaining=shoe.mileage  # Initialize mileage_remaining
+        shoe_id=shoe_id,
+        mileage_run=0,
+        mileage_remaining=shoe.mileage,
+        total_mileage_allowed=shoe.mileage
     )
-    print(f"Adding shoe with mileage: {shoe.mileage}")  # Debugging line
-    db.session.add(user_shoe)
+    db.session.add(new_user_shoe)
     db.session.commit()
 
-    return jsonify({'message': 'Shoe added successfully'}), 200
+    return jsonify({'message': 'Shoe added successfully'}), 201
+
+
+@app.route('/user/set-main-shoe', methods=['POST'])
+@jwt_required()
+def set_main_shoe():
+    current_user_email = get_jwt_identity()
+    user = Users.query.filter_by(email=current_user_email).first()
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    data = request.get_json()
+    shoe_id = data.get('shoe_id')
+
+    # Check if the shoe belongs to the user
+    user_shoe = UserShoes.query.filter_by(user_id=user.id, shoe_id=shoe_id).first()
+    if not user_shoe:
+        return jsonify({'error': 'Shoe not associated with user'}), 400
+
+    user.main_shoe_id = shoe_id
+    db.session.commit()
+
+    return jsonify({'message': 'Main shoe updated successfully'}), 200
 
 
 @app.route('/user/mileage-run', methods=['GET'])
@@ -427,33 +455,6 @@ def get_shoes():
         'durability_rate': shoe.durability_rate,
         'pace_rate': shoe.pace_rate,
     } for shoe in shoes])
-
-# @app.route('/associate_shoe', methods=['POST'])
-# def associate_shoe():
-#     data = request.json
-#     if not data or 'user_id' not in data or 'shoe_id' not in data:
-#         return jsonify({'error': 'Invalid data'}), 400
-
-#     # Verify user exists
-#     user = Users.query.get(data['user_id'])
-#     if not user:
-#         return jsonify({'error': 'User not found'}), 404
-
-#     # Verify shoe exists
-#     shoe = Shoes.query.get(data['shoe_id'])
-#     if not shoe:
-#         return jsonify({'error': 'Shoe not found'}), 404
-
-#     # Check if the shoe is already associated with another user
-#     if shoe.user_id:
-#         return jsonify({'error': 'Shoe is already associated with a user'}), 409
-
-#     # Associate shoe with the user
-#     shoe.user_id = data['user_id']
-#     db.session.commit()
-
-#     return jsonify({'message': f'Shoe "{shoe.model_name}" successfully associated with user {user.username}!'})
-
 
 
 if __name__ == '__main__':
