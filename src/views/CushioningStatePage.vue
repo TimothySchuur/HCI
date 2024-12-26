@@ -255,20 +255,17 @@ export default {
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
-        // Add the shoe locally to the userShoes array
-        userShoes.value.push({
-          ...shoe,
-          mileage_run: 0,
-          mileage_remaining: shoe.mileage || 0,
-          cushioningPercentage: 100, // Default cushioning for a new shoe
-        });
-
         console.log(`Shoe added to user's account: ${shoe.shoe_brand} - ${shoe.model_name}`);
         showShoeDropdown.value = false;
+
+        // Fetch updated user profile data
+        await fetchUserProfile(); // Ensure this function exists to refresh user data
+
       } catch (error) {
         console.error('Error adding shoe:', error.response?.data || error.message);
       }
     };
+
 
 
     // Toggle shoe dropdown

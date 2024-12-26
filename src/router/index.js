@@ -35,11 +35,6 @@ const routes = [
     component: Shoes,
   },
   {
-    path: "/register", // Define the new route path
-    name: "Register", // Give it a unique name
-    component: Register, // Assign the component to render
-  },
-  {
     path: '/connect-strava',
     name: 'StravaPage',
     component: StravaPage,

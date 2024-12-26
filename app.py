@@ -1,17 +1,16 @@
-from flask import Flask, jsonify, request, render_template, session, redirect, url_for
+from flask import Flask, jsonify, request, render_template, session, redirect
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
 from stravalib import Client
 import time
-from pprint import pprint
 import pandas as pd
 from dotenv import load_dotenv
-import os
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from sqlalchemy import create_engine
-from sqlalchemy.exc import SQLAlchemyError
+# from sqlalchemy import create_engine
+# from sqlalchemy.exc import SQLAlchemyError
 
 # Flask app initialization
 app = Flask(__name__)
@@ -29,12 +28,18 @@ def after_request(response):
 # Database configuration
 app.config['SECRET_KEY'] = "your_secret_key"
 app.config['JWT_SECRET_KEY'] = "your_jwt_secret_key"
-# app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://reinierbos:password@localhost:5432/hci_db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://reinierbos:password@localhost:5432/hci_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hci.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 jwt = JWTManager(app)
 bcrypt = Bcrypt(app)
+migrate = Migrate(app, db)
+
+@app.before_request
+def enable_foreign_keys():
+    db.session.execute('PRAGMA foreign_keys = ON;')
 
 # User model
 class Users(db.Model):
@@ -277,7 +282,7 @@ def strava_callback():
 def activities():
     try:
         # Fetch activities using the Strava client
-        activities = client.get_activities(limit=1)
+        activities = client.get_activities(limit=10)
         print(activities)
         
         # Extract relevant information and preprocess distance
