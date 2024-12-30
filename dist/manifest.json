@@ -1,0 +1,9 @@
+{
+    "name": "RunWise",
+    "short_name": "RunWise",
+    "start_url": "/home",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#4CAF50"
+  }
+  

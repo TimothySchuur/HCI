@@ -1,10 +1,14 @@
+<!-- MILEAGE VERANDEREN NAAR TOTAL DISTANCE COVERAGE -->
+
+
+
 <template>
     <div v-if="questionNum > 0 && questionNum <= 4 " class="pos-back">
       <div style="flex-direction: column;" @click="questionNum--">
         <p class="questionNum">{{ questionNum }} / 4</p>
         <img style="margin-top: 12px;" src="../img/arrow_back_24dp_3F3F3F_FILL0_wght400_GRAD0_opsz24.svg">
       </div>
-   </div>
+   </div> 
    <div v-if="questionNum > 4" class="pos-restart">
       <div style="flex-direction: row;">
         <img @click="questionNum--" style="height: 32px;" src="../img/arrow_back_24dp_3F3F3F_FILL0_wght400_GRAD0_opsz24.svg">
@@ -14,10 +18,10 @@
 
   <div class="width">
     <div class="container" v-if="questionNum <= 4">
-      <h1  v-if="questionNum === 0" class="title">SHOE FINDER</h1>
+      <h1 v-if="questionNum === 0" class="title">SHOE FINDER</h1>
 
       <!-- Filters -->
-      <div :style="questionNum == 3 ? 'bottom: -88px; position: absolute' : questionNum !== 0 ? 'bottom: -38px; position: absolute' : ''"class="content">
+      <div :style="questionNum == 3 ? 'bottom: -88px; position: absolute' : questionNum !== 0 ? 'bottom: -38px; position: absolute' : ''" class="content">
 
         <p :style="questionNum == 4 ? 'margin-bottom: 12px' : ''"  class="question">{{ question[questionNum] }}</p>
 
@@ -613,7 +617,7 @@ button{
   height: 84%;
   position: absolute;
   width: 100%;
-  bottom: 12px;
+  bottom: 32px;
   /* bottom: 120px; */
 }
 .tags {
