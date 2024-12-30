@@ -129,10 +129,10 @@ export default {
   if (!signupUsername.value || !signupEmail.value || !signupPassword.value) {
     return; // No action if fields are empty
   }
-  
+
   try {
     const response = await axios.post(`${process.env.VUE_APP_API_URL}/register`, {
-      email: signupEmail.value,   // Correct usage of reactive values
+      email: signupEmail.value,
       username: signupUsername.value,
       password: signupPassword.value
     }, {
@@ -140,8 +140,12 @@ export default {
     });
 
     console.log('Registration successful', response);
+
+    // Reload the window after successful registration
+    window.location.reload();
+
   } catch (error) {
-    console.error("Sign-up failed:", error); // Log unexpected errors
+    console.error("Sign-up failed:", error);
 
     if (error.response) {
       // If there's a response from the server
@@ -155,6 +159,7 @@ export default {
     }
   }
 };
+
 
 
 
