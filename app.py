@@ -413,6 +413,7 @@ def set_main_shoe():
     return jsonify({'message': 'Main shoe updated successfully'}), 200
 
 
+
 @app.route('/user/mileage-run', methods=['GET'])
 @jwt_required()
 def get_mileage_run():

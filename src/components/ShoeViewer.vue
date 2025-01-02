@@ -19,49 +19,52 @@ export default {
   },
   setup(props) {
     const canvas = ref(null);
-    const rgbVue = reactive({ r: 20, g: 224, b: 97 });
+    const rgbVue = reactive({ r: 20, g: 224, b: 97 }); // Reactive RGB object
 
     // Function to dispatch the custom event with RGB values
     const updateRgbVue = () => {
+      const rgbString = `rgb(${rgbVue.r}, ${rgbVue.g}, ${rgbVue.b})`;
       const event = new CustomEvent('adjustedTopColorUpdated', {
-        detail: `rgb(${rgbVue.r}, ${rgbVue.g}, ${rgbVue.b})`
+        detail: rgbString
       });
       window.dispatchEvent(event);
     };
 
-    // Watch rgbVue for changes, dispatching an event each time
-    watch(rgbVue, updateRgbVue, { deep: true });
-
-    onMounted(() => {
-      setupThreeJS(canvas.value);
-
-      // Log the original progressGradient to see its value
-      console.log('Original progressGradient:', props.progressGradient);
-
-      // Update the regex to handle spaces and line breaks inside the rgb() value
+    // Function to extract RGB values from progressGradient prop
+    const extractRgbFromGradient = () => {
       const regex = /linear-gradient\([^)]+,\s*(rgb\([^)]+\))\)/;
       const match = props.progressGradient.trim().match(regex);
 
       if (match && match[1]) {
-        const rgb = match[1]; // Extracted RGB value
-        console.log('Extracted RGB:', rgb);
+        const rgb = match[1];
+        const rgbValues = rgb.match(/\d+(\.\d+)?/g).map(Number); // Extract and parse RGB values
+        rgbVue.r = Math.round(rgbValues[0]);
+        rgbVue.g = Math.round(rgbValues[1]);
+        rgbVue.b = Math.round(rgbValues[2]);
 
-        // Extract the numeric RGB values from the string and round them
-        const rgbValues = rgb.match(/\d+(\.\d+)?/g).map(Number); // This also handles decimals
-        const roundedRgbValues = rgbValues.map(value => Math.round(value));
-
-        // Construct the rounded RGB string
-        const roundedRgbString = `rgb(${roundedRgbValues.join(', ')})`;
-
-        // Dispatch custom event with the rounded RGB value
-        const event = new CustomEvent('adjustedTopColorUpdated', { detail: roundedRgbString });
-        window.dispatchEvent(event);
+        // Dispatch custom event with updated RGB
+        updateRgbVue();
       } else {
         console.log('No match found for the regex');
       }
+    };
+
+    onMounted(() => {
+      // Set timeout of 200ms (you can adjust as needed)
+      setTimeout(() => {
+
+        extractRgbFromGradient();
+      }, 300); // 200ms delay
+
+      // Watch rgbVue for updates
+      watch(rgbVue, () => {
+
+        if (canvas.value) {
+          setupThreeJS(canvas.value, rgbVue); // Pass updated rgbVue to Three.js
+        }
+      }, { deep: true, immediate: true });
     });
 
-    // Return the necessary bindings to the template
     return { canvas, rgbVue, updateRgbVue };
   }
 };
@@ -76,10 +79,12 @@ export default {
   width: 100%;
   height: 100%; /* Ensure the container has full height */
 }
+
 canvas {
   position: absolute;
   z-index: 10; /* Adjust the z-index of the canvas to avoid covering .bg */
 }
+
 .bg {
   position: absolute;
   width: 100%;
@@ -88,5 +93,4 @@ canvas {
   border-radius: 8px;
   z-index: -1;
 }
-
 </style>

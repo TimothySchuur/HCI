@@ -67,9 +67,6 @@ position: absolute;
   font-family: "Headers", sans-serif;
   padding: 22px;
   }
-  
-  button:hover {
-    background-color: #e04301;
-  }
+
   </style>
   
