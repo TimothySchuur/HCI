@@ -91,3 +91,11 @@ Start the Flask app:
 ```bash
 python app.py
 ```
+
+<!-- Misschien moet je dit runnen:
+flask db init                                                                    
+flask db migrate -m "Initial migration"
+flask db upgrade
+
+Ipv alleen 
+flask db upgrade -->

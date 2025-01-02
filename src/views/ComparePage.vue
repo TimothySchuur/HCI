@@ -66,14 +66,17 @@
         :class="{ active: selectedEcoFriendly === option }"
         @click="setFilter('eco_friendly', option)"
       >
-        {{ option }} <img style="width: 100%; ; margin-left: 6px; height: 16px" src="../img/eco_24dp_3F3F3F_FILL0_wght400_GRAD0_opsz24.svg">
+        {{ option }} <img style="width: 100%; margin-left: 6px; height: 16px" src="../img/eco_24dp_3F3F3F_FILL0_wght400_GRAD0_opsz24.svg">
       </button>
     </div>
 
     <!-- Main Content -->
     <div :style="mainContentStyle" class="main-content">
       <!-- Shoe Details -->
-      <h1 style="margin-top: 6px; font-size: 18px; width: 80%;"  v-if="selectedShoe">{{ selectedShoe.shoe_brand }} {{ selectedShoe.model_name }}</h1>
+      <div v-if="selectedShoe" style="display: flex; flex-direction: row; margin-left: -22px">
+        <button @click="closeShoeInformation" class="close-btn"> <img style="height: 32px" src="../img/arrow_back_24dp_3F3F3F_FILL0_wght400_GRAD0_opsz24.svg"></button>
+        <h1 style="margin-top: 6px; font-size: 18px;"  v-if="selectedShoe">{{ selectedShoe.shoe_brand }} {{ selectedShoe.model_name }}</h1>
+      </div>
       <div v-if="selectedShoe" class="shoe-details col">
         <ul class="tags">
           <!-- Eco Friendly -->
@@ -95,7 +98,6 @@
           <!-- Price -->
           <li v-if="selectedShoe.price" class="tag">Price: €{{ selectedShoe.price }}</li>
         </ul>
-        <button @click="closeShoeInformation" class="close-btn"><u>Close</u></button>
         <img style="width: 260px; height: 100%" src="../img/shoe-big.png" alt="Shoe Image">
         <div class="ratings row">
 
@@ -131,8 +133,7 @@
                 height: selectedShoe ? selectedShoe.pace_rate * 10 + '%' : 'auto', 
                 borderRadius: selectedShoe && selectedShoe.pace_rate === 10 ? '8px' : '',
                 background: selectedShoe && selectedShoe.pace_rate > 5 ? 'linear-gradient(to top, #6DBB84, #067631)' : 'linear-gradient(to top, #C9432F, #C3210F)'
-              }"
-              class="rating"></div>
+              }" class="rating"></div>
             </div>
           </div>
         </div>
@@ -448,7 +449,6 @@ bottom: 32px;
 }
 
 .close-btn {
-  position: absolute;
   top: 6px;
   right: 12px;
   background: none;
