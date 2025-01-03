@@ -76,3 +76,8 @@ npm install
 npm run serve -- --port 8081
 ```
 
+## visite website in your browser
+http://localhost:8081/login
+
+ ---IMPORTANT---
+ In your browser, view the page in devmode with the dimension of an Iphone 12 pro
