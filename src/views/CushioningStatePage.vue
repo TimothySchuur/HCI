@@ -308,6 +308,17 @@ export default {
 
         userShoes.value = shoes || [];
 
+        // Move the main shoe to the top of the list if it exists
+        if (main && userShoes.value.length > 0) {
+          const mainShoeIndex = userShoes.value.findIndex(
+            shoe => shoe.id === main.id
+          );
+          if (mainShoeIndex !== -1) {
+            const [mainShoeItem] = userShoes.value.splice(mainShoeIndex, 1);
+            userShoes.value.unshift(mainShoeItem);
+          }
+        }
+
         // Set loading to false after data is fetched
         loading.value = false;
       } catch (error) {
@@ -317,6 +328,7 @@ export default {
         );
       }
     };
+
 
     // Reset main shoe when none is selected
     const resetMainShoe = () => {
@@ -439,7 +451,7 @@ export default {
             // Set the first shoe as the main shoe
             const response = await axios.post(
               "http://127.0.0.1:5000/user/set-main-shoe",
-              { shoe_id: 14 }, //Dit moet veranderd worden in de juiste shoe id van de eerste schoen voor het account.
+              { shoe_id: user.main_shoe_id }, //Dit moet veranderd worden in de juiste shoe id van de eerste schoen voor het account.
               { headers: firstShoe.headers }
             );
             console.log(response.data.message);
@@ -535,12 +547,18 @@ export default {
       }
 
       try {
+        // Update the main shoe before adding the activity
+        await fetchUserProfile();
+
+        // Add the activity to the account
         await axios.post(
           "http://127.0.0.1:5000/update-activities",
           { activity_id: activity.id },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        activities.value.splice(index, 1); // Remove added activity
+
+        // Remove added activity from the list
+        activities.value.splice(index, 1);
       } catch (error) {
         console.error(
           "Error adding activity:",
@@ -548,8 +566,10 @@ export default {
         );
       }
 
+      // Reload the page to reflect changes
       window.location.reload();
     };
+
 
     // Check login status
     const checkLoginStatus = async () => {
