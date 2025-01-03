@@ -508,7 +508,7 @@ h3{
 }
 .width {
   width: 90%;
-  height: 100vh;
+  height: calc(100vh - 32px);
   position: relative;
 }
 

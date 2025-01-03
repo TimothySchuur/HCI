@@ -14,7 +14,8 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 # Flask app initialization
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:8081"}})
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
+
 
 load_dotenv()
 
@@ -323,7 +324,10 @@ def update_activities():
         return jsonify({'error': 'User not found'}), 404
 
     # Get the user's shoe
-    user_shoe = UserShoes.query.filter_by(user_id=user.id).first()
+    user_shoe = (
+            UserShoes.query.filter_by(id=user.main_shoe_id).first() or
+            UserShoes.query.filter_by(user_id=user.id).first()
+        )
 
     if not user_shoe:
         return jsonify({'error': 'No shoe found for the user'}), 404
@@ -392,25 +396,36 @@ def add_shoe():
 @app.route('/user/set-main-shoe', methods=['POST'])
 @jwt_required()
 def set_main_shoe():
+    data = request.get_json()
+    model_name = data.get('model_name')
+
+    if not model_name:
+        return jsonify({'error': 'Model name is required'}), 400
+
     current_user_email = get_jwt_identity()
     user = Users.query.filter_by(email=current_user_email).first()
 
     if not user:
         return jsonify({'error': 'User not found'}), 404
 
-    data = request.get_json()
-    shoe_id = data.get('shoe_id')
+    # Find the shoe_id for the given model_name
+    shoe = Shoes.query.filter_by(model_name=model_name).first()
 
-    # Check if the shoe exists in the user's account
-    user_shoe = UserShoes.query.filter_by(id=shoe_id, user_id=user.id).first()
-    if not user_shoe:
+    if not shoe:
         return jsonify({'error': 'Shoe not found'}), 404
 
+    # Find the user_shoe entry with the corresponding shoe_id
+    user_shoe = UserShoes.query.filter_by(user_id=user.id, shoe_id=shoe.id).first()
+
+    if not user_shoe:
+        return jsonify({'error': 'User does not own this shoe'}), 400
+
     # Set the main shoe
-    user.main_shoe_id = shoe_id
+    user.main_shoe_id = user_shoe.id
     db.session.commit()
 
-    return jsonify({'message': 'Main shoe updated successfully'}), 200
+    return jsonify({'message': 'Main shoe set successfully'}), 200
+
 
 
 
@@ -424,7 +439,10 @@ def get_mileage_run():
         return jsonify({'error': 'User not found'}), 404
 
     # Get the user's shoe data
-    user_shoe = UserShoes.query.filter_by(user_id=user.id).first()
+    user_shoe = (
+            UserShoes.query.filter_by(id=user.main_shoe_id).first() or
+            UserShoes.query.filter_by(user_id=user.id).first()
+        )
     print(user_shoe)
 
     if not user_shoe:

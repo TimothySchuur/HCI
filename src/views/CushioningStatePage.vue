@@ -21,15 +21,33 @@
               }"
             ></div>
             <div v-if="mainShoe" class="col">
-              <p style="color: #171717; font-family: 'SemiBold', sans-serif">
+              <p
+                :style="{
+                  color: cushioningPercentage > 20 ? '#171717' : '#fff',
+                  fontFamily: 'SemiBold, sans-serif',
+                }"
+              >
                 {{ mileage_remaining }} KM
               </p>
-              <p style="color: #171717; font-family: 'Light', sans-serif">
+              <p
+                :style="{
+                  color: cushioningPercentage > 20 ? '#171717' : '#fff',
+                  fontFamily: 'SemiBold, sans-serif',
+                }"
+              >
                 REMAINING
               </p>
             </div>
             <div @click="toggleProfileView" class="no-shoe" v-if="!mainShoe">
-              <p style="color: white; font-size: 16px; font-family: 'Light', sans-serif" >Add shoe</p>
+              <p
+                style="
+                  color: white;
+                  font-size: 16px;
+                  font-family: 'Light', sans-serif;
+                "
+              >
+                Add shoe
+              </p>
             </div>
           </div>
         </div>
@@ -204,16 +222,28 @@
               :key="index"
               class="activity-item"
             >
-            <div style="display: flex; flex-direction: row; position: relative;">
-              <div style="display: flex; flex-direction: column; font-family: 'Text';">
-                <strong style="font-family: 'text-b';">{{ activity.name }}</strong>
-                <p>Distance: {{ activity.distance }} meters</p>
-              </div>
+              <div
+                style="display: flex; flex-direction: row; position: relative"
+              >
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    font-family: 'Text';
+                  "
+                >
+                  <strong style="font-family: 'text-b'">{{
+                    activity.name
+                  }}</strong>
+                  <p>Distance: {{ activity.distance }} meters</p>
+                </div>
 
-              <button class="btn-add" @click="addActivity(activity, index)">
-                <strong style="font-size: 16px;">Add <span style="font-size: 22px;">+</span></strong>
-              </button>
-            </div>
+                <button class="btn-add" @click="addActivity(activity, index)">
+                  <strong style="font-size: 16px"
+                    >Add <span style="font-size: 22px">+</span></strong
+                  >
+                </button>
+              </div>
             </li>
           </ul>
         </div>
@@ -251,7 +281,6 @@ export default {
     const showShoeDropdown = ref(false);
     const showOptionsForShoeId = ref(null);
     const loading = ref(true);
-    const firstShoe = ref({});
 
     const cushioningPercentage = ref(0);
     const kmRan = ref(0);
@@ -350,7 +379,7 @@ export default {
         // Call the API to set the main shoe
         const response = await axios.post(
           "http://127.0.0.1:5000/user/set-main-shoe",
-          { shoe_id: shoe.id },
+          { model_name: shoe.model_name },
           { headers: { Authorization: `Bearer ${token}` } }
         );
         console.log(response.data.message);
@@ -407,7 +436,7 @@ export default {
         return;
       }
 
-      if (!shoe || !shoe.id) {
+      if (!shoe || !shoe.model_name) {
         console.error("Invalid shoe object:", shoe);
         return;
       }
@@ -420,51 +449,31 @@ export default {
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
-        const firstShoe = {
-          shoe_id: shoe.id,
-          headers: { Authorization: `Bearer ${token}` },
-        };
-
         console.log(
           `Shoe added to user's account: ${shoe.shoe_brand} - ${shoe.model_name}`
         );
-        console.log("First shoe:", firstShoe);
 
         // Fetch updated user profile data
-        let updatedProfile;
+        const updatedProfile = await fetchUserProfile();
+        console.log("Updated Profile:", updatedProfile);
 
-        // Fetch profile first
-        const fetchProfile = async () => {
-          try {
-            updatedProfile = await fetchUserProfile();
-            console.log("Updated Profile:", updatedProfile);
-          } catch (error) {
-            console.error("Error fetching user profile:", error);
-          }
-        };
-
-        await fetchProfile();
-
-        // Ensure the userShoes array is available after fetching profile
+        // If this is the first shoe, set it as the main shoe
         if (userShoes.value.length < 2) {
           try {
-            // Set the first shoe as the main shoe
             const response = await axios.post(
               "http://127.0.0.1:5000/user/set-main-shoe",
-              { shoe_id: user.main_shoe_id }, //Dit moet veranderd worden in de juiste shoe id van de eerste schoen voor het account.
-              { headers: firstShoe.headers }
+              { model_name: shoe.model_name }, // Pass model_name instead of shoe_id
+              { headers: { Authorization: `Bearer ${token}` } }
             );
             console.log(response.data.message);
 
             // Refresh profile data after updating the main shoe
             await fetchUserProfile();
             window.location.reload();
-            console.log(userShoesCount.value);
           } catch (error) {
             console.error("Error setting main shoe:", error);
           }
         } else {
-
           manageShoes.value = true;
         }
 
@@ -606,12 +615,27 @@ export default {
 
     // Function to generate the progress gradient
     const generateProgressGradient = (percentage) => {
-      const brightnessFactor = percentage / 100;
-      const adjustedTopColor = `rgb(
+      if (percentage > 20) {
+        const brightnessFactor = percentage / 100;
+        const adjustedTopColor = `rgb(
         ${10 + (245 - 10) * (1 - brightnessFactor)}, 
         ${122 + (203 - 122) * (1 - brightnessFactor)}, 
         ${52 + (191 - 52) * (1 - brightnessFactor)})`;
-      return `linear-gradient(to top, #C5CBBF, ${adjustedTopColor})`;
+        return `linear-gradient(to top, #C5CBBF, ${adjustedTopColor})`;
+      } else if (percentage <= 20 && percentage > 0) {
+        const adjustedTopColor = `rgb(
+        ${232}, 
+        ${82}, 
+        ${82})`;
+        console.log("percentage  :" , percentage)
+        return `linear-gradient(to top, #E85252, ${adjustedTopColor})`;
+      } else {
+        const adjustedTopColor = `rgb(
+        ${0}, 
+        ${0}, 
+        ${0})`;
+        return `linear-gradient(to top, #000000, ${adjustedTopColor})`;
+      }
     };
 
     // Progress bar gradient computed property
@@ -673,7 +697,7 @@ export default {
   text-align: center;
 }
 
-.no-shoe{
+.no-shoe {
   text-align: center;
   margin-top: 120%;
 }

@@ -54,7 +54,7 @@ export default {
       setTimeout(() => {
 
         extractRgbFromGradient();
-      }, 300); // 200ms delay
+      }, 500);
 
       // Watch rgbVue for updates
       watch(rgbVue, () => {

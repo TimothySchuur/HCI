@@ -1,6 +1,6 @@
 <template>
   <div class="width">
-    <div class="container">
+    <div :style="selectedShoe ? 'bottom: 32px': ''" class="container">
     <h1  v-if="!selectedShoe" class="title">SHOE COMPARISON</h1>
 
     <!-- Search Bar -->
@@ -35,7 +35,7 @@
       <button
         v-for="(option, index) in genderOptions"
         :key="index"
-        :class="{ active: selectedGender === option }"
+        :class="['gender', { genderActive: selectedGender === option }]"
         @click="setFilter('gender', option)"
       >
         {{ option }}
@@ -44,7 +44,7 @@
       <button
         v-for="(option, index) in mileageOptions"
         :key="index"
-        :class="{ active: selectedMileage === option }"
+        :class="['mileage', { mileageActive: selectedMileage === option }]"
         @click="setFilter('mileage', option)"
       >
         {{ option }}
@@ -53,7 +53,7 @@
       <button
         v-for="(option, index) in mainFocusOptions"
         :key="index"
-        :class="{ active: selectedMainFocus === option }"
+        :class="['mainfocus', { mainfocusActive: selectedMainFocus === option }]"
         @click="setFilter('main_focus', option)"
       >
         {{ option }}
@@ -63,7 +63,7 @@
         v-for="(option, index) in ecoFriendlyOptions"
         :key="index"
         style="display: flex; flex-direction: row; "
-        :class="{ active: selectedEcoFriendly === option }"
+        :class="['ecofriendly', { ecofriendlyActive: selectedEcoFriendly === option }]"
         @click="setFilter('eco_friendly', option)"
       >
         {{ option }} <img style="width: 100%; margin-left: 6px; height: 16px" src="../img/eco_24dp_3F3F3F_FILL0_wght400_GRAD0_opsz24.svg">
@@ -366,11 +366,11 @@ h3{
 .container{
 position: absolute;
 width: 100%;
-bottom: 32px;
+/* bottom: 32px; */
 }
 .width {
   width: 90%;
-  height: 100vh;
+  height: calc(100vh - 32px);
   position: relative;
 }
 
@@ -544,7 +544,9 @@ p {
 }
 
 .results-bg {
-  margin-top: 12px;
+  position: absolute;
+  top: 12px;
+  /* margin-top: 12px; */
   background-color: #171717;
   border-radius: 8px;
   overflow-y: auto; /* Maak de lijst scrollbaar */
@@ -554,6 +556,7 @@ p {
 }
 
 .similar-results-bg {
+  /* position: absolute; */
   margin-top: 12px;
   background-color: #171717;
   border-radius: 8px;
@@ -590,8 +593,8 @@ p {
 
 .filters button {
   padding: 6px 10px;
-  background: #3F3F3F;
-  color: #fff;
+  /* background: #3F3F3F; */
+  color: #000;
   border: none;
   border-radius: 8px;
   font-size: 13px;
@@ -599,10 +602,45 @@ p {
   white-space: nowrap;
 }
 
-.filters button.active {
-  background: #D6D6D6;
-  color: #000;
+.filters button.genderActive {
+  background: #e19200;
+  color: #fff;
   font-family: 'SemiBold', sans-serif;
 }
 
+.filters button.mileageActive {
+  background: #007fd9;
+  color: #fff;
+  font-family: 'SemiBold', sans-serif;
+}
+
+.filters button.mainfocusActive {
+  background: #e6005c;
+  color: #fff;
+  font-family: 'SemiBold', sans-serif;
+}
+
+.filters button.ecofriendlyActive {
+  background: #3F3F3F;
+  color: #fff;
+  font-family: 'SemiBold', sans-serif;
+}
+
+.mileage{
+  background: #def8ff;
+
+}
+
+.gender{
+  background: #f7f8e8;
+
+}
+
+.mainfocus{
+  background: #f3dce6;
+}
+
+.ecofriendly{
+  /* background: #e2fadf; */
+}
 </style>

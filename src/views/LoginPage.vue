@@ -102,7 +102,7 @@ export default {
   if (!loginEmail.value || !loginPassword.value) return; // No action if fields are empty
 
   try {
-    const response = await axios.post(`${process.env.VUE_APP_API_URL}/login`, {
+    const response = await axios.post(`http://127.0.0.1:5000/login`, {
       email: loginEmail.value,
       password: loginPassword.value,
     });
@@ -131,7 +131,7 @@ export default {
   }
 
   try {
-    const response = await axios.post(`${process.env.VUE_APP_API_URL}/register`, {
+    const response = await axios.post(`http://127.0.0.1:5000/register`, {
       email: signupEmail.value,
       username: signupUsername.value,
       password: signupPassword.value
@@ -183,7 +183,7 @@ export default {
 <style scoped>
 .width {
   width: 90%;
-  height: 100vh;
+  height: calc(100vh - 32px);
   position: relative;
 }
 
