@@ -23,7 +23,7 @@ This is a Flask-based web application for managing user shoe data, including tra
 
 ## Setup Instructions
 
-### 1. Clone the Repository
+### 1. Clone the Repository (not necessary if you have the files locally)
 
 ```
 git clone https://github.com/TimothySchuur/HCI.git
