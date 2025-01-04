@@ -1,11 +1,10 @@
 import csv
-from app import db
-from app import Shoes
+from app import db, Shoes
 from flask import Flask
 
 # Flask app context setup
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hci.db'  # Update with your database URI
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hci.db' 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 

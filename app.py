@@ -9,10 +9,8 @@ import time
 import pandas as pd
 from dotenv import load_dotenv
 from flask_jwt_extended import jwt_required, get_jwt_identity
-# from sqlalchemy import create_engine
-# from sqlalchemy.exc import SQLAlchemyError
 
-# Flask app initialization
+
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
@@ -279,6 +277,7 @@ def strava_callback():
 
     return redirect('http://localhost:8081/home')
 
+
 @app.route('/activities', methods=['GET'])
 def activities():
     try:
@@ -290,60 +289,76 @@ def activities():
         activities_list = []
         for activity in activities:
             activities_list.append({
+                'id': activity.id,  # Add the unique ID of the activity
                 'name': activity.name,
                 'distance': activity.distance.magnitude if hasattr(activity.distance, 'magnitude') else None,  # Extract numeric value
             })
-
 
         # Return the preprocessed activities as JSON
         return jsonify(activities_list)
     except Exception as e:
         print(f"Error fetching activities: {e}")
         return jsonify({'error': 'Failed to fetch activities'}), 500
+
     
+
 @app.route('/update-activities', methods=['POST'])
 @jwt_required()
 def update_activities():
-    # Fetch activities from the client
-    activities = client.get_activities(limit=1)
-    activities_list = []
-    for activity in activities:
-        activities_list.append({
-            'distance': activity.distance.magnitude if hasattr(activity.distance, 'magnitude') else None,  # Extract numeric value
-        })
-    
-    # Convert the distance to kilometers
-    distance = activities_list[0]['distance'] / 1000
-    print(f"Distance (km): {distance}")
+    # Get the data from the request
+    data = request.get_json()
+    activity_id = data.get('activity_id')
 
-    # Get the current user from the JWT token
-    current_user_email = get_jwt_identity()
-    user = Users.query.filter_by(email=current_user_email).first()
+    if not activity_id:
+        return jsonify({'error': 'Missing activity_id'}), 400
 
-    if not user:
-        return jsonify({'error': 'User not found'}), 404
+    try:
+        # Fetch activities from the client
+        activities = client.get_activities(limit=10)
+        
+        # Find the activity with the given activity_id
+        selected_activity = next((a for a in activities if a.id == activity_id), None)
 
-    # Get the user's shoe
-    user_shoe = (
+        if not selected_activity:
+            return jsonify({'error': 'Activity not found'}), 404
+
+        # Extract the distance from the selected activity
+        distance = selected_activity.distance.magnitude if hasattr(selected_activity.distance, 'magnitude') else 0
+        distance_km = distance / 1000  # Convert to kilometers
+        print(f"Selected activity distance (km): {distance_km}")
+
+        # Get the current user from the JWT token
+        current_user_email = get_jwt_identity()
+        user = Users.query.filter_by(email=current_user_email).first()
+
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+
+        # Get the user's shoe
+        user_shoe = (
             UserShoes.query.filter_by(id=user.main_shoe_id).first() or
             UserShoes.query.filter_by(user_id=user.id).first()
         )
 
-    if not user_shoe:
-        return jsonify({'error': 'No shoe found for the user'}), 404
+        if not user_shoe:
+            return jsonify({'error': 'No shoe found for the user'}), 404
 
-    # Update mileage_run
-    user_shoe.mileage_run += distance
-    print(f"Updated mileage_run: {user_shoe.mileage_run}")
+        # Update mileage_run
+        user_shoe.mileage_run += distance_km
+        print(f"Updated mileage_run: {user_shoe.mileage_run}")
 
-    # Calculate remaining mileage and update the mileage_remaining field
-    user_shoe.mileage_remaining = max(0, user_shoe.total_mileage_allowed - user_shoe.mileage_run)
-    print(f"Updated mileage_remaining: {user_shoe.mileage_remaining}")
+        # Calculate remaining mileage and update the mileage_remaining field
+        user_shoe.mileage_remaining = max(0, user_shoe.total_mileage_allowed - user_shoe.mileage_run)
+        print(f"Updated mileage_remaining: {user_shoe.mileage_remaining}")
 
-    # Commit changes to the database
-    db.session.commit()
+        # Commit changes to the database
+        db.session.commit()
 
-    return jsonify({'mileage_remaining': user_shoe.mileage_remaining}), 200
+        return jsonify({'mileage_remaining': user_shoe.mileage_remaining}), 200
+
+    except Exception as e:
+        print(f"Error updating activities: {e}")
+        return jsonify({'error': 'Failed to update activity'}), 500
 
 
 @app.route('/cushioning-percentage', methods=['GET'])

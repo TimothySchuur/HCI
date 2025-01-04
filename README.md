@@ -34,7 +34,8 @@ cd HCI
 
 ```
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+On Mac: source venv/bin/activate  
+On Windows: .\venv\Scripts\activate
 ```
 
 ### 3. Install Dependencies
@@ -43,11 +44,12 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 4. Set Up the Database
+### 4. Set Up the Database 
 
 #### Create the Database and Tables:
 
 ```
+flask db migrate -m "Initial migration"
 flask db upgrade
 ```
 

@@ -556,17 +556,21 @@ export default {
       }
 
       try {
+        console.log("Sending activity ID:", activity.id);
+        // Log the selected activity for debugging
+        console.log("Adding activity:", activity);
+
         // Update the main shoe before adding the activity
         await fetchUserProfile();
 
-        // Add the activity to the account
+        // Send the selected activity's ID to the backend
         await axios.post(
           "http://127.0.0.1:5000/update-activities",
-          { activity_id: activity.id },
+          { activity_id: activity.id }, // Only send the ID of the selected activity
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
-        // Remove added activity from the list
+        // Remove the added activity from the list
         activities.value.splice(index, 1);
       } catch (error) {
         console.error(
