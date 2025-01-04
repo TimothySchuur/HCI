@@ -615,6 +615,7 @@ export default {
     // Watch for changes in cushioningPercentage and update progress gradient
     watch(cushioningPercentage, (newValue) => {
       progressGradient.value = generateProgressGradient(newValue);
+
     });
 
     // Function to generate the progress gradient

@@ -19,7 +19,7 @@
     methods: {
       async checkLoginStatus() {
         try {
-          const response = await fetch('http://localhost:5000/check_strava', {
+          const response = await fetch('http://127.0.0.1:5000/check_strava', {
             method: 'GET',
             credentials: 'include', // Include session cookies
           });
@@ -54,7 +54,7 @@
         this.$router.push('/login'); // Replace with your login route
       },
       redirectToStrava() {
-        window.location.href = 'http://localhost:5000/check_strava'; // Strava connection route
+        window.location.href = 'http://127.0.0.1:5000/check_strava'; // Strava connection route
       },
     },
     mounted() {
