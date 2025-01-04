@@ -130,7 +130,7 @@
           <!-- Main Focus -->
           <li class="tag">Main focus: {{ selectedShoe.main_focus }}</li>
           <!-- Mileage -->
-          <li class="tag">Mileage: {{ selectedShoe.mileage }}</li>
+          <li class="tag">Durability: {{ selectedShoe.mileage }} km</li>
           <!-- Foot Type -->
           <li v-if="selectedShoe.foot_type" class="tag">Foot Type: {{ selectedShoe.foot_type }}</li>
           <!-- Price -->

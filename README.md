@@ -1,7 +1,7 @@
 -----------------------------------------------
 # Flask Shoe Tracking Application
 
-This is a Flask-based web application for managing user shoe data, including tracking mileage and cushioning percentage, connecting with Strava, and performing user authentication with JWT. The application uses SQLite as the database.
+This is a Flask-based web application for managing user shoe data, including tracking distance and cushioning percentage, connecting with Strava, and performing user authentication with JWT. The application uses SQLite as the database.
 
 ---
 
@@ -9,7 +9,7 @@ This is a Flask-based web application for managing user shoe data, including tra
 
 - User authentication (registration, login, logout) with JWT
 - Manage user shoes: add, remove, and set main shoe
-- Track mileage and cushioning percentage for shoes
+- Track distance and cushioning percentage for shoes
 - Strava integration for fetching activity data
 - Fetch and compare shoe data
 
