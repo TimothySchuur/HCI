@@ -11,8 +11,12 @@
       </div>
       <div style="display: flex; flex-direction: row">
         <div class="container">
-          <div class="content progress-bar">
-            <div class="dashed-line"></div>
+          <div :style="mainShoe && cushioningPercentage == 0 ? 'background-color: #E85252' : ''"  class="content progress-bar">
+            <div class="col" style="position: absolute; bottom: 42%;" v-if="mainShoe && cushioningPercentage == 0">
+              <img class="scale-in-out" src="../img/warning_24dp_FFF_FILL0_wght400_GRAD0_opsz24.svg">
+              <p style="color: #fff; font-family: 'semibold'; margin-top: 12px">REPLACE<br>SHOE</p>
+            </div>
+            <div v-if="cushioningPercentage > 20" class="dashed-line"></div>
             <div
               class="progress"
               :style="{
@@ -78,7 +82,7 @@
       </div>
     </div>
   </div>
-  <!-- Profile Page -->
+  
   <!-- Profile Page -->
   <div class="width" v-else>
     <button @click="toggleProfileView" class="close-btn">
@@ -235,7 +239,7 @@
                   <strong style="font-family: 'text-b'">{{
                     activity.name
                   }}</strong>
-                  <p>Distance: {{ activity.distance }} meters</p>
+                  <p>Distance: {{ activity.distance / 1000}} km</p>
                 </div>
 
                 <button class="btn-add" @click="addActivity(activity, index)">
@@ -486,11 +490,6 @@ export default {
       }
     };
 
-    // Toggle shoe dropdown
-    // const toggleShoeDropdown = () => {
-    //   showShoeDropdown.value = !showShoeDropdown.value;
-    // };
-
     // Fetch all shoes
     const fetchAllShoes = async () => {
       try {
@@ -627,14 +626,15 @@ export default {
         ${122 + (203 - 122) * (1 - brightnessFactor)}, 
         ${52 + (191 - 52) * (1 - brightnessFactor)})`;
         return `linear-gradient(to top, #C5CBBF, ${adjustedTopColor})`;
-      } else if (percentage <= 20 && percentage > 0) {
+      } else if (percentage <= 20 && mainShoe.value) {
+        console.log("haaaa:   ", mainShoe.value)
         const adjustedTopColor = `rgb(
         ${232}, 
         ${82}, 
         ${82})`;
         console.log("percentage  :" , percentage)
         return `linear-gradient(to top, #E85252, ${adjustedTopColor})`;
-      } else {
+      } else if (!mainShoe.value) {
         const adjustedTopColor = `rgb(
         ${0}, 
         ${0}, 
@@ -1053,4 +1053,20 @@ img {
   border: none;
   /* background-color: #e02b07; */
 }
+
+@keyframes scaleInOut {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.2);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  .scale-in-out {
+    animation: scaleInOut 2s infinite;
+  }
 </style>

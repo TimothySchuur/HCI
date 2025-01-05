@@ -1,6 +1,6 @@
 <template>
   <div class="width">
-    <div :style="selectedShoe && !selectedShoe2 ? 'bottom: 32px' : selectedShoe2? 'bottom: 48px' :''" class="container">
+    <div :style="selectedShoe && !selectedShoe2 ? 'top: 7%' : selectedShoe2? 'top: 7%' :''" class="container">
       <h1 v-if="!selectedShoe" class="title">SHOE COMPARISON</h1>
 
       <!-- Search Bar -->
@@ -207,13 +207,17 @@
           </div>
         </div>
 
+        <div style="margin-top: 6px; width: 100%; display: flex; justify-content: center;" v-if="selectedShoe2">
+          <img src="../img/arrows.svg">
+        </div>
+
         <!-- Shoe Details2 -->
         <div v-if="selectedShoe2">
           <div
           
           style="display: flex; flex-direction: row; margin-left: 0px"
         >
-          <h1 style="margin-top: 30px; font-size: 18px" v-if="selectedShoe">
+          <h1 style="margin-top: 0px; font-size: 18px" v-if="selectedShoe">
             {{ selectedShoe2.shoe_brand }} {{ selectedShoe2.model_name }}
           </h1>
         </div>
