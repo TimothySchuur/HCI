@@ -38,7 +38,7 @@
           :class="['gender', { genderActive: selectedGender === option }]"
           @click="setFilter('gender', option)"
         >
-          {{ option }}
+          {{ selectedGender === option ? option.toLocaleUpperCase() : option }}
         </button>
 
         <button
@@ -47,7 +47,7 @@
           :class="['mileage', { mileageActive: selectedMileage === option }]"
           @click="setFilter('mileage', option)"
         >
-          {{ option }}
+          {{ selectedMileage === option ? option.toLocaleUpperCase() : option }}
         </button>
 
         <button
@@ -59,7 +59,7 @@
           ]"
           @click="setFilter('main_focus', option)"
         >
-          {{ option }}
+          {{ selectedMainFocus === option ? option.toLocaleUpperCase() : option }}
         </button>
 
         <button
@@ -72,7 +72,7 @@
           ]"
           @click="setFilter('eco_friendly', option)"
         >
-          {{ option }}
+          {{ selectedEcoFriendly === option ? option.toLocaleUpperCase() : option }}
           <img
             style="width: 100%; margin-left: 6px; height: 16px"
             src="../img/eco_24dp_3F3F3F_FILL0_wght400_GRAD0_opsz24.svg"
@@ -449,16 +449,16 @@ export default {
     const selectedShoe2 = ref(null);
 
     const genderOptions = ref(["Male", "Female"]);
-    const mileageOptions = ref(["High distance coverage"]);
+    const mileageOptions = ref(["High Durability"]);
     const mainFocusOptions = ref([
       "Trail Running",
-      "High cushioning",
+      "High Cushioning",
       "Speed",
       "Stability",
       "Daily Training",
       "Long Distance",
     ]);
-    const ecoFriendlyOptions = ref(["Eco friendly"]);
+    const ecoFriendlyOptions = ref(["Eco Friendly"]);
 
     const selectedGender = ref(null);
     const selectedMileage = ref(null);
@@ -515,7 +515,7 @@ export default {
           shoe.main_focus
             .toLowerCase()
             .includes(selectedMainFocus.value.toLowerCase()) ||
-          (selectedMainFocus.value === "High cushioning" &&
+          (selectedMainFocus.value === "High Cushioning" &&
             shoe.main_focus.toLowerCase().includes("cushion")) ||
           (selectedMainFocus.value === "Speed" &&
             (shoe.main_focus.toLowerCase().includes("sprint") ||
@@ -929,6 +929,6 @@ p {
 }
 
 .ecofriendly {
-  /* background: #e2fadf; */
+  background: #e4ede2;
 }
 </style>
