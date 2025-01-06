@@ -751,6 +751,7 @@ button {
   display: flex;
   justify-content: center;
   flex-direction: column;
+  margin-top: 18px;
 }
 
 .top {

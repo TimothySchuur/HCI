@@ -207,7 +207,7 @@
           </div>
         </div>
 
-        <div style="margin-top: 6px; width: 100%; display: flex; justify-content: center;" v-if="selectedShoe2">
+        <div style="margin-top: 24px; width: 100%; display: flex; justify-content: center;" v-if="selectedShoe2">
           <img src="../img/arrows.svg">
         </div>
 
@@ -217,8 +217,8 @@
           
           style="display: flex; flex-direction: row; margin-left: 0px"
         >
-          <h1 style="margin-top: 0px; font-size: 18px" v-if="selectedShoe">
-            {{ selectedShoe2.shoe_brand }} {{ selectedShoe2.model_name }}
+          <h1 style="margin-top: 18px; font-size: 18px" v-if="selectedShoe">
+            {{ selectedShoe2.s4hoe_brand }} {{ selectedShoe2.model_name }}
           </h1>
         </div>
           <div v-if="selectedShoe2" class="shoe-details col">
@@ -836,24 +836,26 @@ p {
 .results-bg {
   position: absolute;
   top: 12px;
+  width: 100%;
   /* margin-top: 12px; */
   background-color: #171717;
   border-radius: 8px;
   overflow-y: auto; /* Maak de lijst scrollbaar */
   padding: 0 10px;
   box-sizing: border-box;
-  max-height: 47vh; /* Zorgt dat er ruimte is */
+  max-height: 45vh; /* Zorgt dat er ruimte is */
 }
 
 .similar-results-bg {
   /* position: absolute; */
+  width: 100%;
   margin-top: 12px;
   background-color: #171717;
   border-radius: 8px;
   overflow-y: auto; /* Maak de lijst scrollbaar */
   padding: 0 10px;
   box-sizing: border-box;
-  max-height: 22vh; /* Zorgt dat er ruimte is */
+  max-height: 26vh; /* Zorgt dat er ruimte is */
 }
 
 .results {

@@ -747,7 +747,7 @@ p {
   overflow-y: auto; /* Maak de lijst scrollbaar */
   padding: 0 10px;
   box-sizing: border-box;
-  max-height: calc(100vh - 150px); /* Zorgt dat er ruimte is */
+  max-height: 20vh; /* Zorgt dat er ruimte is */
 }
 
 .results {
